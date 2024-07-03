@@ -8,8 +8,8 @@ import { RecordingContextProvider } from './RecordingContext';
 import './globals.css';
 import { RecordingPanel } from './RecordingPanel';
 
-let title = 'notesGPT - Take notes with your voice';
-let description = 'Generate action items from your notes in seconds';
+let title = 'Create content with your voice';
+let description = 'Convert your voice notes into tweets, blog posts, summaries, loose notes and clear action items using AI.';
 let url = 'https://usenotesgpt.com';
 let ogimage = 'https://usenotesgpt.com/images/og-image.png';
 let sitename = 'usenotesgpt.com';
@@ -47,7 +47,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <RecordingPanel />
             {children}
             <Analytics />
-            <Footer />
             <Toaster position="bottom-left" reverseOrder={false} />
           </RecordingContextProvider>
         </ConvexClientProvider>
