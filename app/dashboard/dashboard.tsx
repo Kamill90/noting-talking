@@ -69,15 +69,23 @@ export default function DashboardHomePage({
     });
 
     return filteredNotes.map((note) => {
-      // return null
       return (
         <li key={note._id} className="flex flex-row justify-between gap-x-6 border px-8 py-5">
           <Link href={`/recording/${note._id}`} className="flex min-w-0 basis-1/2 gap-x-4">
-            <img
-              className="h-12 w-12 flex-none rounded-full bg-gray-50"
-              src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-              alt=""
-            />
+            <svg
+              className="h-8 w-8 text-black-500"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              stroke-width="2"
+              stroke="currentColor"
+              fill="none"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path stroke="none" d="M0 0h24v24H0z" /> <path d="M14 3v4a1 1 0 0 0 1 1h4" />{' '}
+              <path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z" />
+            </svg>
             <div className="min-w-0 flex-auto self-center">
               <p className="text-sm font-semibold leading-6 text-gray-900">{note.title}</p>
             </div>

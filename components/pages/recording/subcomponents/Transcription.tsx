@@ -33,6 +33,10 @@ export const Transcription = ({
       textAreaRef.current?.focus();
       const textareaRef = textAreaRef.current || {};
       textareaRef.selectionStart = textAreaRef.current?.value.length;
+      const scrollHeight = textAreaRef.current?.scrollHeight;
+
+      textAreaRef.current.style.height = scrollHeight + 'px';
+      console.log('trol', textAreaRef.current?.style);
     });
   };
 

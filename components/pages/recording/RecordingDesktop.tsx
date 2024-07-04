@@ -65,7 +65,7 @@ export default function RecordingDesktop({ note }: { note: Doc<'notes'> }) {
           </div>
         </div>
       )}
-      <div className="min-h-full">
+      <div className="min-h-screen">
         <div className="py-10">
           <header>
             <a
@@ -92,30 +92,26 @@ export default function RecordingDesktop({ note }: { note: Doc<'notes'> }) {
               <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">{summary}</div>
             </div>
             <Transcription note={note} target="transcription" />
-            {tweet ? (
-              <Transcription note={note} target="tweet" />
-            ) : generatingTweet ? (
+            {generatingTweet ? (
               <InlineLoader text="Generating tweet" />
+            ) : tweet ? (
+              <Transcription note={note} target="tweet" />
             ) : null}
-            {blogPost ? (
-              <Transcription note={note} target="blogPost" />
-            ) : generatingBlogPost ? (
+            {generatingBlogPost ? (
               <InlineLoader text="Generating blog post" />
+            ) : blogPost ? (
+              <Transcription note={note} target="blogPost" />
             ) : null}
           </main>
         </div>
-        <footer>
+        <footer className="sticky bottom-0 bg-white">
           <div className="mx-auto min-h-full max-w-7xl py-10">
             <div className="text-gray-400">Create</div>
             <div className="flex flex-row">
-              <button className="mr-5 text-blue-400" disabled={!!tweet} onClick={modifyToTweet}>
+              <button className="mr-5 text-blue-400" onClick={modifyToTweet}>
                 Tweet
               </button>
-              <button
-                className="mr-5 text-blue-400"
-                disabled={!!blogPost}
-                onClick={modifyToBlogPost}
-              >
+              <button className="mr-5 text-blue-400" onClick={modifyToBlogPost}>
                 Blog post
               </button>
             </div>
