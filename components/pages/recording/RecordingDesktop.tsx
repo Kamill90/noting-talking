@@ -4,6 +4,7 @@ import { Doc } from '@/convex/_generated/dataModel';
 import { timestampToDate } from '@/convex/utils';
 import { useMutation } from 'convex/react';
 import { ChevronLeft } from 'lucide-react';
+import Link from 'next/link';
 import { Transcription } from './subcomponents/Transcription';
 
 export default function RecordingDesktop({ note }: { note: Doc<'notes'> }) {
@@ -41,7 +42,7 @@ export default function RecordingDesktop({ note }: { note: Doc<'notes'> }) {
   return (
     <>
       {loading && (
-        <div className="absolute h-full w-full bg-slate-300 opacity-70">
+        <div className="absolute z-2 h-full w-full bg-slate-300 opacity-70">
           <div
             role="status"
             className="absolute left-1/2 top-2/4 -translate-x-1/2 -translate-y-1/2"
@@ -68,13 +69,13 @@ export default function RecordingDesktop({ note }: { note: Doc<'notes'> }) {
       <div className="min-h-screen">
         <div className="py-10">
           <header>
-            <a
+            <Link
               href="/dashboard"
               className="text-m mx-auto block flex max-w-7xl py-2 font-semibold text-blue-400 hover:bg-gray-50"
             >
               <ChevronLeft className="shrink-0 text-blue-400" aria-hidden="true" />
               Dashboard
-            </a>
+            </Link>
             <div className="mx-auto flex max-w-7xl justify-between px-4 sm:px-6 lg:px-8">
               <h1 className="text-3xl font-bold leading-tight tracking-tight text-gray-900">
                 {title}
@@ -104,7 +105,7 @@ export default function RecordingDesktop({ note }: { note: Doc<'notes'> }) {
             ) : null}
           </main>
         </div>
-        <footer className="sticky bottom-0 bg-white">
+        {!loading && <footer className='sticky bottom-0 z-1 bg-white'>
           <div className="mx-auto min-h-full max-w-7xl py-10">
             <div className="text-gray-400">Create</div>
             <div className="flex flex-row">
@@ -116,7 +117,7 @@ export default function RecordingDesktop({ note }: { note: Doc<'notes'> }) {
               </button>
             </div>
           </div>
-        </footer>
+        </footer>}
       </div>
     </>
   );

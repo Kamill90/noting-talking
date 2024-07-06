@@ -3,7 +3,10 @@ import { Analytics } from '@vercel/analytics/react';
 import type { Metadata } from 'next';
 import { Toaster } from 'react-hot-toast';
 import ConvexClientProvider from './ConvexClientProvider';
+import { RecordingContextProvider } from './RecordingContext';
+
 import './globals.css';
+import { RecordingPanel } from './RecordingPanel';
 
 let title = 'notesGPT - Take notes with your voice';
 let description = 'Generate action items from your notes in seconds';
@@ -40,10 +43,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" className="h-full">
       <body className="h-full" suppressHydrationWarning={true}>
         <ConvexClientProvider>
-          {children}
-          <Analytics />
-          <Footer />
-          <Toaster position="bottom-left" reverseOrder={false} />
+          <RecordingContextProvider>
+            <RecordingPanel />
+            {children}
+            <Analytics />
+            <Footer />
+            <Toaster position="bottom-left" reverseOrder={false} />
+          </RecordingContextProvider>
         </ConvexClientProvider>
       </body>
     </html>

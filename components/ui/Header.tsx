@@ -5,7 +5,7 @@ import { UserNav } from './UserNav';
 export default async function Header() {
   const user = await currentUser();
   return (
-    <div className="container relative m-0 mx-auto py-10 md:px-10">
+    <div className="container relative m-0 mx-auto pb-10 md:px-10">
       <div className="max-width flex items-center justify-between">
         {/* logo */}
         <Link className="flex w-fit items-center gap-[2px]" href="/dashboard">

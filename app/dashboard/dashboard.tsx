@@ -8,7 +8,8 @@ import { Preloaded, useMutation } from 'convex/react';
 import { FunctionReturnType } from 'convex/server';
 import Link from 'next/link';
 
-import { useState } from 'react';
+import { useContext, useState } from 'react';
+import { RecordingContext } from '../RecordingContext';
 
 export default function DashboardHomePage({
   preloadedNotes,
@@ -16,13 +17,13 @@ export default function DashboardHomePage({
   preloadedNotes: Preloaded<typeof api.notes.getNotes>;
 }) {
   const allNotes = usePreloadedQueryWithAuth(preloadedNotes);
+  const { isRecording, startRecording } = useContext(RecordingContext);
 
   const [searchQuery, setSearchQuery] = useState('');
   const [relevantNotes, setRelevantNotes] =
     useState<FunctionReturnType<typeof api.notes.getNotes>>();
   const mutateNoteRemove = useMutation(api.notes.removeNote);
 
-  const finalNotes = relevantNotes ?? allNotes;
   function classNames(...classes: string[]) {
     return classes.filter(Boolean).join(' ');
   }
@@ -73,15 +74,15 @@ export default function DashboardHomePage({
         <li key={note._id} className="flex flex-row justify-between gap-x-6 border px-8 py-5">
           <Link href={`/recording/${note._id}`} className="flex min-w-0 basis-1/2 gap-x-4">
             <svg
-              className="h-8 w-8 text-black-500"
+              className="text-black-500 h-8 w-8"
               width="24"
               height="24"
               viewBox="0 0 24 24"
-              stroke-width="2"
+              strokeWidth="2"
               stroke="currentColor"
               fill="none"
-              stroke-linecap="round"
-              stroke-linejoin="round"
+              strokeLinecap="round"
+              strokeLinejoin="round"
             >
               <path stroke="none" d="M0 0h24v24H0z" /> <path d="M14 3v4a1 1 0 0 0 1 1h4" />{' '}
               <path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z" />
@@ -144,13 +145,14 @@ export default function DashboardHomePage({
                   className="block h-full w-full rounded-md border-0 py-1.5 pr-14 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                 />
               </div>
-              <Link
+              <button
+                disabled={isRecording}
                 type="button"
                 className="flex-end rounded-md bg-indigo-600 px-3.5 py-2.5 text-xl font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                href="/record"
+                onClick={startRecording}
               >
                 Record note
-              </Link>
+              </button>
             </div>
             <div className="mx-auto my-8 max-w-7xl sm:px-6">
               <ul role="list">{allNotes.length ? renderList() : <h2>no recordings</h2>}</ul>
