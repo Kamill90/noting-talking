@@ -11,7 +11,7 @@ interface RecordingContextType {
   stopRecording: () => void;
   startRecording: () => void;
   totalSeconds?: number;
-  processing: boolean
+  processing: boolean;
 }
 
 const defaultState = {
@@ -19,7 +19,7 @@ const defaultState = {
   stopRecording: () => {},
   startRecording: () => {},
   totalSeconds: undefined,
-  processing: false
+  processing: false,
 };
 
 // Create the context with a default value
@@ -29,7 +29,7 @@ export const RecordingContext = createContext<RecordingContextType>(defaultState
 export const RecordingContextProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(null);
   const [isRecording, setIsRecording] = useState(false);
-  const [processing, setProcessing] = useState(false)
+  const [processing, setProcessing] = useState(false);
   const [totalSeconds, setTotalSeconds] = useState(0);
 
   const { user } = useUser();
@@ -87,16 +87,18 @@ export const RecordingContextProvider: React.FC<{ children: ReactNode }> = ({ ch
   const stopRecording = () => {
     // @ts-ignore
     mediaRecorder.stop();
-    setMediaRecorder(null)
-    setProcessing(true)
+    setMediaRecorder(null);
+    setProcessing(true);
     setTimeout(() => {
       setIsRecording(false);
-      setProcessing(false)
+      setProcessing(false);
     }, 3000);
   };
 
   return (
-    <RecordingContext.Provider value={{ totalSeconds, stopRecording, startRecording, isRecording, processing }}>
+    <RecordingContext.Provider
+      value={{ totalSeconds, stopRecording, startRecording, isRecording, processing }}
+    >
       {children}
     </RecordingContext.Provider>
   );

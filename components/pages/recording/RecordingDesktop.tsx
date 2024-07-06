@@ -42,7 +42,7 @@ export default function RecordingDesktop({ note }: { note: Doc<'notes'> }) {
   return (
     <>
       {loading && (
-        <div className="absolute z-2 h-full w-full bg-slate-300 opacity-70">
+        <div className="z-2 absolute h-full w-full bg-slate-300 opacity-70">
           <div
             role="status"
             className="absolute left-1/2 top-2/4 -translate-x-1/2 -translate-y-1/2"
@@ -105,19 +105,21 @@ export default function RecordingDesktop({ note }: { note: Doc<'notes'> }) {
             ) : null}
           </main>
         </div>
-        {!loading && <footer className='sticky bottom-0 z-1 bg-white'>
-          <div className="mx-auto min-h-full max-w-7xl py-10">
-            <div className="text-gray-400">Create</div>
-            <div className="flex flex-row">
-              <button className="mr-5 text-blue-400" onClick={modifyToTweet}>
-                Tweet
-              </button>
-              <button className="mr-5 text-blue-400" onClick={modifyToBlogPost}>
-                Blog post
-              </button>
+        {!loading && (
+          <footer className="z-1 sticky bottom-0 bg-white">
+            <div className="mx-auto min-h-full max-w-7xl py-10">
+              <div className="text-gray-400">Create</div>
+              <div className="flex flex-row">
+                <button className="mr-5 text-blue-400" onClick={modifyToTweet}>
+                  Tweet
+                </button>
+                <button className="mr-5 text-blue-400" onClick={modifyToBlogPost}>
+                  Blog post
+                </button>
+              </div>
             </div>
-          </div>
-        </footer>}
+          </footer>
+        )}
       </div>
     </>
   );
