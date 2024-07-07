@@ -11,12 +11,11 @@ export default async function Header() {
         <Link className="flex w-fit items-center gap-[2px]" href="/dashboard">
           <img
             src="/logo.svg"
-            width={50}
-            height={50}
+            width={150}
+            height={150}
             alt="logo"
-            className="h-5 w-5 md:h-8 md:w-8"
+            className="h-15 w-15 md:h-15 md:w-15"
           />
-          <h1 className="text-xl font-medium text-[#25292F] md:text-3xl">NotesGPT</h1>
         </Link>
         {/* buttons */}
         <div className="flex w-fit items-center gap-[22px]">
