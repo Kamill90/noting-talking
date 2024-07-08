@@ -5,9 +5,8 @@ import { timestampToDate } from '@/convex/utils';
 import { usePreloadedQueryWithAuth } from '@/lib/hooks';
 import { Menu, MenuButton, MenuItem, MenuItems, Transition } from '@headlessui/react';
 import { Preloaded, useMutation } from 'convex/react';
-import { FunctionReturnType } from 'convex/server';
+import { PlayIcon } from 'lucide-react';
 import Link from 'next/link';
-
 import { useContext, useState } from 'react';
 import { RecordingContext } from '../RecordingContext';
 
@@ -18,10 +17,9 @@ export default function DashboardHomePage({
 }) {
   const allNotes = usePreloadedQueryWithAuth(preloadedNotes);
   const { isRecording, startRecording } = useContext(RecordingContext);
+  const [playingIndex, setPlayingIndex] = useState<string | undefined>(undefined);
 
   const [searchQuery, setSearchQuery] = useState('');
-  const [relevantNotes, setRelevantNotes] =
-    useState<FunctionReturnType<typeof api.notes.getNotes>>();
   const mutateNoteRemove = useMutation(api.notes.removeNote);
 
   function classNames(...classes: string[]) {
@@ -36,6 +34,11 @@ export default function DashboardHomePage({
       },
     },
   ];
+
+
+  const handlePlay = (id: string) => {
+    setPlayingIndex(id);
+  };
 
   const actionItems = ({
     item,
@@ -72,21 +75,20 @@ export default function DashboardHomePage({
     return filteredNotes.map((note) => {
       return (
         <li key={note._id} className="flex flex-row justify-between gap-x-6 border px-8 py-5">
+          {playingIndex === note._id ? (
+              <audio
+                className="h-10 w-max-50 opacity-100 transition-opacity duration-1000 ease-in-out"
+                controls
+                autoPlay
+                src={note.audioFileUrl}
+              />
+          ) : (
+            <PlayIcon
+              className="w-5 opacity-100 transition-all duration-1000 ease-in-out hover:opacity-75"
+              onClick={() => handlePlay(note._id)}
+            />
+          )}
           <Link href={`/recording/${note._id}`} className="flex min-w-0 basis-1/2 gap-x-4">
-            <svg
-              className="text-black-500 h-8 w-8"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              strokeWidth="2"
-              stroke="currentColor"
-              fill="none"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path stroke="none" d="M0 0h24v24H0z" /> <path d="M14 3v4a1 1 0 0 0 1 1h4" />{' '}
-              <path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z" />
-            </svg>
             <div className="min-w-0 flex-auto self-center">
               <p className="text-sm font-semibold leading-6 text-gray-900">{note.title}</p>
             </div>
