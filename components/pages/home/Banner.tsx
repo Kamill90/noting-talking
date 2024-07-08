@@ -4,16 +4,15 @@ const Banner = () => {
   return (
     <div className="relative h-[350px] w-full px-4 md:h-[605px] md:px-6 lg:px-8 xl:px-10 2xl:px-0">
       <div className="flex h-full w-full flex-col items-center justify-center">
-
         <h1 className="inline-block text-center text-4xl font-medium tracking-tighter text-dark lg:text-7xl">
           Create content with <br className="hidden lg:inline-block" />
           your voice
         </h1>
         <p className="mt-8 text-center text-xl font-light tracking-tight lg:text-3xl">
-          Convert your voice notes into{' '}
+          Convert your voice notes into
           <span className="font-bold">
             tweets, blog posts, summaries, loose notes <br className="hidden lg:inline-block" />
-          </span>{' '}
+          </span>
           and <span className="font-bold">clear action items</span> using AI.
         </p>
         <Link
@@ -27,7 +26,4 @@ const Banner = () => {
   );
 };
 
-
 export default Banner;
-
-

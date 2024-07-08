@@ -9,7 +9,8 @@ import './globals.css';
 import { RecordingPanel } from './RecordingPanel';
 
 let title = 'Create content with your voice';
-let description = 'Convert your voice notes into tweets, blog posts, summaries, loose notes and clear action items using AI.';
+let description =
+  'Convert your voice notes into tweets, blog posts, summaries, loose notes and clear action items using AI.';
 let url = 'https://usenotesgpt.com';
 let ogimage = 'https://usenotesgpt.com/images/og-image.png';
 let sitename = 'usenotesgpt.com';
