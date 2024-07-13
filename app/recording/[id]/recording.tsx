@@ -18,7 +18,6 @@ export default function RecordingPage({
   const allCustomPoints = usePreloadedQueryWithAuth(preloadedCustomPoints);
   const allCustomTranscriptions = usePreloadedQueryWithAuth(preloadedCustomTranscriptions);
 
-
   return (
     <div className="mx-auto max-w-[1500px]">
       {currentNote.note === null ? (
@@ -33,7 +32,6 @@ export default function RecordingPage({
             customPoints={allCustomPoints}
           />
         </>
-
       )}
     </div>
   );

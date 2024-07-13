@@ -35,7 +35,6 @@ export default function DashboardHomePage({
     },
   ];
 
-
   const handlePlay = (id: string) => {
     setPlayingIndex(id);
   };
@@ -76,12 +75,12 @@ export default function DashboardHomePage({
       return (
         <li key={note._id} className="flex flex-row justify-between gap-x-6 border px-8 py-5">
           {playingIndex === note._id ? (
-              <audio
-                className="h-10 w-max-50 opacity-100 transition-opacity duration-1000 ease-in-out"
-                controls
-                autoPlay
-                src={note.audioFileUrl}
-              />
+            <audio
+              className="w-max-50 h-10 opacity-100 transition-opacity duration-1000 ease-in-out"
+              controls
+              autoPlay
+              src={note.audioFileUrl}
+            />
           ) : (
             <PlayIcon
               className="w-5 opacity-100 transition-all duration-1000 ease-in-out hover:opacity-75"

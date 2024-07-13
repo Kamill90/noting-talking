@@ -20,14 +20,13 @@ interface Props {
     title: string;
     description: string;
   }[];
-  customTranscriptions:  {
-      _id: Id<'customTranscriptions'>;
-      _creationTime: number;
-      noteId: string;
-      title: string;
-      value: string;
-    }[]
-  ;
+  customTranscriptions: {
+    _id: Id<'customTranscriptions'>;
+    _creationTime: number;
+    noteId: string;
+    title: string;
+    value: string;
+  }[];
 }
 
 export default function RecordingDesktop({ note, customPoints, customTranscriptions }: Props) {
@@ -75,8 +74,8 @@ export default function RecordingDesktop({ note, customPoints, customTranscripti
   };
 
   const submitDialog = (title: string, description: string) => {
-    if(customPoints.find((point)=>point.title === title)) {
-      return console.error('duplicates are prohibited')
+    if (customPoints.find((point) => point.title === title)) {
+      return console.error('duplicates are prohibited');
     }
     addCustomPoints(title, description);
   };
