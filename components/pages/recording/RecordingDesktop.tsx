@@ -1,13 +1,36 @@
 import InlineLoader from '@/components/ui/InlineLoader';
 import { api } from '@/convex/_generated/api';
-import { Doc } from '@/convex/_generated/dataModel';
+import { Doc, Id } from '@/convex/_generated/dataModel';
 import { timestampToDate } from '@/convex/utils';
+import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react';
 import { useMutation } from 'convex/react';
-import { ChevronLeft } from 'lucide-react';
+import { ChevronDownIcon, ChevronLeft, TrashIcon } from 'lucide-react';
 import Link from 'next/link';
+import { useState } from 'react';
+import useCustomPoints from '../hooks/useCustomPoints';
+import Dialog from './subcomponents/Dialog';
 import { Transcription } from './subcomponents/Transcription';
 
-export default function RecordingDesktop({ note }: { note: Doc<'notes'> }) {
+interface Props {
+  note: Doc<'notes'>;
+  customPoints: {
+    _id: Id<'customPoints'>;
+    _creationTime: number;
+    userId: string;
+    title: string;
+    description: string;
+  }[];
+  customTranscriptions:  {
+      _id: Id<'customTranscriptions'>;
+      _creationTime: number;
+      noteId: string;
+      title: string;
+      value: string;
+    }[]
+  ;
+}
+
+export default function RecordingDesktop({ note, customPoints, customTranscriptions }: Props) {
   const {
     generatingTitle,
     generatingTranscript,
@@ -20,8 +43,12 @@ export default function RecordingDesktop({ note }: { note: Doc<'notes'> }) {
     generatingBlogPost,
     blogPost,
   } = note;
+  console.log({ customTranscriptions });
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const mutateTranscription = useMutation(api.notes.modifyNoteByUsage);
   const loading = generatingTranscript || generatingTitle;
+
+  const { addCustomPoints, deleteCustomPoint } = useCustomPoints();
 
   const modifyToTweet = () => {
     mutateTranscription({
@@ -39,8 +66,46 @@ export default function RecordingDesktop({ note }: { note: Doc<'notes'> }) {
     });
   };
 
+  const openDialog = () => {
+    setIsDialogOpen(true);
+  };
+
+  const closeDialog = () => {
+    setIsDialogOpen(false);
+  };
+
+  const submitDialog = (title: string, description: string) => {
+    if(customPoints.find((point)=>point.title === title)) {
+      return console.error('duplicates are prohibited')
+    }
+    addCustomPoints(title, description);
+  };
+
+  const renderCustomPoints = () => {
+    return customPoints.map((point) => (
+      <MenuItem key={point._id}>
+        <div className="flex flex-row justify-between">
+          <button className="group flex items-center px-4 py-2 text-sm text-gray-700 data-[focus]:bg-gray-100 data-[focus]:text-gray-900">
+            {point.title}
+          </button>
+          <button
+            onClick={() => {
+              deleteCustomPoint(point._id);
+            }}
+          >
+            <TrashIcon
+              aria-hidden="true"
+              className="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500"
+            />
+          </button>
+        </div>
+      </MenuItem>
+    ));
+  };
+
   return (
     <>
+      <Dialog isOpen={isDialogOpen} close={closeDialog} submit={submitDialog} />
       {loading && (
         <div className="z-2 absolute h-full w-full bg-slate-300 opacity-70">
           <div
@@ -109,12 +174,34 @@ export default function RecordingDesktop({ note }: { note: Doc<'notes'> }) {
           <footer className="z-1 sticky bottom-0 bg-white">
             <div className="mx-auto min-h-full max-w-7xl py-10">
               <div className="text-gray-400">Create</div>
-              <div className="flex flex-row">
-                <button className="mr-5 text-blue-400" onClick={modifyToTweet}>
-                  Tweet
-                </button>
-                <button className="mr-5 text-blue-400" onClick={modifyToBlogPost}>
-                  Blog post
+              <div className="flex flex-row justify-between">
+                <div>
+                  <button className="mr-5 text-blue-400" onClick={modifyToTweet}>
+                    Tweet
+                  </button>
+                  <button className="mr-5 text-blue-400" onClick={modifyToBlogPost}>
+                    Blog post
+                  </button>
+                  <Menu as="div" className="relative inline-block text-left">
+                    <div>
+                      <MenuButton className="inline-flex w-full justify-center gap-x-1.5 bg-white px-3 py-2 text-sm font-semibold text-blue-400">
+                        Custom
+                        <ChevronDownIcon
+                          aria-hidden="true"
+                          className="-mr-1 h-5 w-5 text-gray-400"
+                        />
+                      </MenuButton>
+                    </div>
+                    <MenuItems
+                      transition
+                      className="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 transition focus:outline-none data-[closed]:scale-95 data-[closed]:transform data-[closed]:opacity-0 data-[enter]:duration-100 data-[leave]:duration-75 data-[enter]:ease-out data-[leave]:ease-in"
+                    >
+                      <div className="py-1">{renderCustomPoints()}</div>
+                    </MenuItems>
+                  </Menu>
+                </div>
+                <button className="mr-5 text-blue-400" onClick={openDialog}>
+                  Add Custom
                 </button>
               </div>
             </div>

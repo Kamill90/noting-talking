@@ -14,6 +14,8 @@ import type {
   FilterApi,
   FunctionReference,
 } from "convex/server";
+import type * as customPoints from "../customPoints.js";
+import type * as customTranscriptions from "../customTranscriptions.js";
 import type * as notes from "../notes.js";
 import type * as together from "../together.js";
 import type * as utils from "../utils.js";
@@ -28,6 +30,8 @@ import type * as whisper from "../whisper.js";
  * ```
  */
 declare const fullApi: ApiFromModules<{
+  customPoints: typeof customPoints;
+  customTranscriptions: typeof customTranscriptions;
   notes: typeof notes;
   together: typeof together;
   utils: typeof utils;

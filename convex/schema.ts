@@ -23,4 +23,14 @@ export default defineSchema({
       dimensions: 768,
       filterFields: ['userId'],
     }),
+  customPoints: defineTable({
+    userId: v.string(),
+    title: v.string(),
+    description: v.string(),
+  }).index('by_userId', ['userId']),
+  customTranscriptions: defineTable({
+    noteId: v.string(),
+    title: v.string(),
+    value: v.string(),
+  }).index('by_noteId', ['noteId']),
 });

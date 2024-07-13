@@ -7,10 +7,17 @@ import { Preloaded } from 'convex/react';
 
 export default function RecordingPage({
   preloadedNote,
+  preloadedCustomPoints,
+  preloadedCustomTranscriptions,
 }: {
   preloadedNote: Preloaded<typeof api.notes.getNote>;
+  preloadedCustomPoints: Preloaded<typeof api.customPoints.getCustomPoints>;
+  preloadedCustomTranscriptions: Preloaded<typeof api.customTranscriptions.getCustomTranscriptions>;
 }) {
   const currentNote = usePreloadedQueryWithAuth(preloadedNote);
+  const allCustomPoints = usePreloadedQueryWithAuth(preloadedCustomPoints);
+  const allCustomTranscriptions = usePreloadedQueryWithAuth(preloadedCustomTranscriptions);
+
 
   return (
     <div className="mx-auto max-w-[1500px]">
@@ -20,8 +27,13 @@ export default function RecordingPage({
         </div>
       ) : (
         <>
-          <RecordingDesktop {...currentNote} />
+          <RecordingDesktop
+            {...currentNote}
+            {...allCustomTranscriptions}
+            customPoints={allCustomPoints}
+          />
         </>
+
       )}
     </div>
   );

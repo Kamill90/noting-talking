@@ -36,7 +36,6 @@ export const Transcription = ({
       const scrollHeight = textAreaRef.current?.scrollHeight;
 
       textAreaRef.current.style.height = scrollHeight + 'px';
-      console.log('trol', textAreaRef.current?.style);
     });
   };
 
