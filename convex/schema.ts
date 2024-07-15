@@ -32,5 +32,7 @@ export default defineSchema({
     noteId: v.string(),
     title: v.string(),
     value: v.string(),
+    loading: v.boolean(),
+    error: v.boolean()
   }).index('by_noteId', ['noteId']),
 });

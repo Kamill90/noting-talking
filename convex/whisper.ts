@@ -22,6 +22,7 @@ export const chat = internalAction({
     id: v.id('notes'),
   },
   handler: async (ctx, args) => {
+    // add try catch
     const replicateOutput = (await replicate.run(
       'openai/whisper:4d50797290df275329f202e48c76360b3f22b08d28c196cbc54600319435f8d2',
       {

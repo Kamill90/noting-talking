@@ -2,29 +2,42 @@
 import { api } from '@/convex/_generated/api';
 import { Id } from '@/convex/_generated/dataModel';
 import { timestampToDate } from '@/convex/utils';
+import { DEFAULT_POINTS } from '@/lib/const';
 import { usePreloadedQueryWithAuth } from '@/lib/hooks';
 import { Menu, MenuButton, MenuItem, MenuItems, Transition } from '@headlessui/react';
 import { Preloaded, useMutation } from 'convex/react';
 import { PlayIcon } from 'lucide-react';
 import Link from 'next/link';
-import { useContext, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { RecordingContext } from '../RecordingContext';
 
 export default function DashboardHomePage({
   preloadedNotes,
+  preloadedCustomPoints,
 }: {
   preloadedNotes: Preloaded<typeof api.notes.getNotes>;
+  preloadedCustomPoints: Preloaded<typeof api.customPoints.getCustomPoints>;
 }) {
   const allNotes = usePreloadedQueryWithAuth(preloadedNotes);
+  const allCustomPoints = usePreloadedQueryWithAuth(preloadedCustomPoints);
+
   const { isRecording, startRecording } = useContext(RecordingContext);
   const [playingIndex, setPlayingIndex] = useState<string | undefined>(undefined);
 
   const [searchQuery, setSearchQuery] = useState('');
   const mutateNoteRemove = useMutation(api.notes.removeNote);
+  const addCustomPoint = useMutation(api.customPoints.createCustomPoint);
 
   function classNames(...classes: string[]) {
     return classes.filter(Boolean).join(' ');
   }
+
+  useEffect(() => {
+    if (!allCustomPoints.length) {
+      addCustomPoint(DEFAULT_POINTS[0]);
+      addCustomPoint(DEFAULT_POINTS[1]);
+    }
+  }, []);
 
   const actions = [
     {

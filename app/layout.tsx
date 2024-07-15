@@ -1,12 +1,11 @@
-import Footer from '@/components/ui/Footer';
 import { Analytics } from '@vercel/analytics/react';
 import type { Metadata } from 'next';
 import { Toaster } from 'react-hot-toast';
 import ConvexClientProvider from './ConvexClientProvider';
 import { RecordingContextProvider } from './RecordingContext';
 
-import './globals.css';
 import { RecordingPanel } from './RecordingPanel';
+import './globals.css';
 
 let title = 'Create content with your voice';
 let description =

@@ -8,6 +8,7 @@ import { ChevronDownIcon, ChevronLeft, TrashIcon } from 'lucide-react';
 import Link from 'next/link';
 import { useState } from 'react';
 import useCustomPoints from '../hooks/useCustomPoints';
+import { CustomTranscription } from './subcomponents/CustomTranscription';
 import Dialog from './subcomponents/Dialog';
 import { Transcription } from './subcomponents/Transcription';
 
@@ -26,6 +27,8 @@ interface Props {
     noteId: string;
     title: string;
     value: string;
+    loading: boolean;
+    error: boolean;
   }[];
 }
 
@@ -37,33 +40,17 @@ export default function RecordingDesktop({ note, customPoints, customTranscripti
     transcription = '',
     title,
     _creationTime,
-    generatingTweet,
-    tweet,
-    generatingBlogPost,
-    blogPost,
   } = note;
-  console.log({ customTranscriptions });
+
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const mutateTranscription = useMutation(api.notes.modifyNoteByUsage);
+  const createCustomTranscription = useMutation(api.customTranscriptions.createCustomTranscription);
   const loading = generatingTranscript || generatingTitle;
 
   const { addCustomPoints, deleteCustomPoint } = useCustomPoints();
 
-  const modifyToTweet = () => {
-    mutateTranscription({
-      noteId: note._id,
-      transcript: transcription,
-      target: 'tweet',
-    });
-  };
-
-  const modifyToBlogPost = () => {
-    mutateTranscription({
-      noteId: note._id,
-      transcript: transcription,
-      target: 'blogPost',
-    });
-  };
+  const inlineCustomPoints = customPoints.slice(0, 4);
+  const foldedCustomPoints = customPoints.slice(4, customPoints.length);
 
   const openDialog = () => {
     setIsDialogOpen(true);
@@ -81,10 +68,15 @@ export default function RecordingDesktop({ note, customPoints, customTranscripti
   };
 
   const renderCustomPoints = () => {
-    return customPoints.map((point) => (
+    return foldedCustomPoints.map((point) => (
       <MenuItem key={point._id}>
         <div className="flex flex-row justify-between">
-          <button className="group flex items-center px-4 py-2 text-sm text-gray-700 data-[focus]:bg-gray-100 data-[focus]:text-gray-900">
+          <button
+            onClick={() => {
+              createCustomTranscription({ noteId: note._id, transcript: transcription, point });
+            }}
+            className="group flex items-center px-4 py-2 text-sm text-gray-700 data-[focus]:bg-gray-100 data-[focus]:text-gray-900"
+          >
             {point.title}
           </button>
           <button
@@ -157,16 +149,18 @@ export default function RecordingDesktop({ note, customPoints, customTranscripti
               <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">{summary}</div>
             </div>
             <Transcription note={note} target="transcription" />
-            {generatingTweet ? (
-              <InlineLoader text="Generating tweet" />
-            ) : tweet ? (
-              <Transcription note={note} target="tweet" />
-            ) : null}
-            {generatingBlogPost ? (
-              <InlineLoader text="Generating blog post" />
-            ) : blogPost ? (
-              <Transcription note={note} target="blogPost" />
-            ) : null}
+            {customTranscriptions.length
+              ? customTranscriptions.map((customTranscription) =>
+                  customTranscription.error ? null : customTranscription.loading ? (
+                    <InlineLoader
+                      key={customTranscription._id}
+                      text={`Generating ${customTranscription.title}`}
+                    />
+                  ) : (
+                    <CustomTranscription key={customTranscription._id} note={customTranscription} />
+                  ),
+                )
+              : null}
           </main>
         </div>
         {!loading && (
@@ -175,29 +169,42 @@ export default function RecordingDesktop({ note, customPoints, customTranscripti
               <div className="text-gray-400">Create</div>
               <div className="flex flex-row justify-between">
                 <div>
-                  <button className="mr-5 text-blue-400" onClick={modifyToTweet}>
-                    Tweet
-                  </button>
-                  <button className="mr-5 text-blue-400" onClick={modifyToBlogPost}>
-                    Blog post
-                  </button>
-                  <Menu as="div" className="relative inline-block text-left">
-                    <div>
-                      <MenuButton className="inline-flex w-full justify-center gap-x-1.5 bg-white px-3 py-2 text-sm font-semibold text-blue-400">
-                        Custom
-                        <ChevronDownIcon
-                          aria-hidden="true"
-                          className="-mr-1 h-5 w-5 text-gray-400"
-                        />
-                      </MenuButton>
-                    </div>
-                    <MenuItems
-                      transition
-                      className="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 transition focus:outline-none data-[closed]:scale-95 data-[closed]:transform data-[closed]:opacity-0 data-[enter]:duration-100 data-[leave]:duration-75 data-[enter]:ease-out data-[leave]:ease-in"
+                  {inlineCustomPoints.map((point) => (
+                    <button
+                      key={point._id}
+                      className="mr-5 text-blue-400"
+                      onClick={() => {
+                        createCustomTranscription({
+                          noteId: note._id,
+                          transcript: transcription,
+                          point,
+                        });
+                      }}
                     >
-                      <div className="py-1">{renderCustomPoints()}</div>
-                    </MenuItems>
-                  </Menu>
+                      {point.title}
+                    </button>
+                  ))}
+                  {foldedCustomPoints.length ? (
+                    <Menu as="div" className="relative inline-block text-left">
+                      <div>
+                        <MenuButton className="inline-flex w-full justify-center gap-x-1.5 bg-white px-3 py-2 text-sm font-semibold text-blue-400">
+                          Custom
+                          <ChevronDownIcon
+                            aria-hidden="true"
+                            className="-mr-1 h-5 w-5 text-gray-400"
+                          />
+                        </MenuButton>
+                      </div>
+                      {foldedCustomPoints.length && (
+                        <MenuItems
+                          transition
+                          className="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 transition focus:outline-none data-[closed]:scale-95 data-[closed]:transform data-[closed]:opacity-0 data-[enter]:duration-100 data-[leave]:duration-75 data-[enter]:ease-out data-[leave]:ease-in"
+                        >
+                          <div className="py-1">{renderCustomPoints()}</div>
+                        </MenuItems>
+                      )}
+                    </Menu>
+                  ) : null}
                 </div>
                 <button className="mr-5 text-blue-400" onClick={openDialog}>
                   Add Custom

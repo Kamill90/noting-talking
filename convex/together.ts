@@ -16,7 +16,7 @@ const togetherai = new OpenAI({
 });
 
 // Instructor for returning structured JSON
-const client = Instructor({
+export const client = Instructor({
   client: togetherai,
   mode: 'JSON_SCHEMA',
 });
@@ -73,7 +73,7 @@ export const chat = internalAction({
   },
 });
 
-const TransformationSchema = z.object({
+export const TransformationSchema = z.object({
   modifiedTranscript: z.string().describe('new modified transcription').max(1000),
 });
 
