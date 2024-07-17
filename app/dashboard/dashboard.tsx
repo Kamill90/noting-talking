@@ -1,4 +1,5 @@
 'use client';
+import usePlayer from '@/components/pages/hooks/usePlayer';
 import { api } from '@/convex/_generated/api';
 import { Id } from '@/convex/_generated/dataModel';
 import { timestampToDate } from '@/convex/utils';
@@ -6,7 +7,7 @@ import { DEFAULT_POINTS } from '@/lib/const';
 import { usePreloadedQueryWithAuth } from '@/lib/hooks';
 import { Menu, MenuButton, MenuItem, MenuItems, Transition } from '@headlessui/react';
 import { Preloaded, useMutation } from 'convex/react';
-import { PlayIcon } from 'lucide-react';
+import { PauseIcon, PlayIcon, SquareIcon } from 'lucide-react';
 import Link from 'next/link';
 import { useContext, useEffect, useState } from 'react';
 import { RecordingContext } from '../RecordingContext';
@@ -22,11 +23,12 @@ export default function DashboardHomePage({
   const allCustomPoints = usePreloadedQueryWithAuth(preloadedCustomPoints);
 
   const { isRecording, startRecording } = useContext(RecordingContext);
-  const [playingIndex, setPlayingIndex] = useState<string | undefined>(undefined);
 
   const [searchQuery, setSearchQuery] = useState('');
   const mutateNoteRemove = useMutation(api.notes.removeNote);
   const addCustomPoint = useMutation(api.customPoints.createCustomPoint);
+
+  const { playerState, play, pause, stop, resume } = usePlayer();
 
   function classNames(...classes: string[]) {
     return classes.filter(Boolean).join(' ');
@@ -47,10 +49,6 @@ export default function DashboardHomePage({
       },
     },
   ];
-
-  const handlePlay = (id: string) => {
-    setPlayingIndex(id);
-  };
 
   const actionItems = ({
     item,
@@ -87,19 +85,39 @@ export default function DashboardHomePage({
     return filteredNotes.map((note) => {
       return (
         <li key={note._id} className="flex flex-row justify-between gap-x-6 border px-8 py-5">
-          {playingIndex === note._id ? (
-            <audio
-              className="w-max-50 h-10 opacity-100 transition-opacity duration-1000 ease-in-out"
-              controls
-              autoPlay
-              src={note.audioFileUrl}
-            />
-          ) : (
-            <PlayIcon
-              className="w-5 opacity-100 transition-all duration-1000 ease-in-out hover:opacity-75"
-              onClick={() => handlePlay(note._id)}
-            />
-          )}
+          <div className="flex w-14 flex-row items-center justify-start">
+            {playerState.currentUrl === note.audioFileUrl ? (
+              <>
+                {playerState.isPaused ? (
+                  <PlayIcon
+                    type="button"
+                    className="mr-2 w-5 cursor-pointer opacity-100 transition-all duration-1000 ease-in-out hover:opacity-75"
+                    onClick={resume}
+                  />
+                ) : (
+                  <PauseIcon
+                    type="button"
+                    className="mr-2 w-5 cursor-pointer opacity-100 transition-all duration-1000 ease-in-out hover:opacity-75"
+                    onClick={pause}
+                  />
+                )}
+
+                <SquareIcon
+                  className="mr-2 w-5 cursor-pointer opacity-100 transition-all duration-1000 ease-in-out hover:opacity-75"
+                  onClick={stop}
+                />
+              </>
+            ) : (
+              <PlayIcon
+                type="button"
+                className="mr-2 w-5 cursor-pointer opacity-100 transition-all duration-1000 ease-in-out hover:opacity-75"
+                onClick={() => {
+                  play(note.audioFileUrl);
+                }}
+              />
+            )}
+          </div>
+
           <Link href={`/recording/${note._id}`} className="flex min-w-0 basis-1/2 gap-x-4">
             <div className="min-w-0 flex-auto self-center">
               <p className="text-sm font-semibold leading-6 text-gray-900">{note.title}</p>

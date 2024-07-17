@@ -19,12 +19,12 @@ export const RecordingPanel = () => {
   }
 
   return (
-    <div className="h-100 sticky top-5 flex w-full justify-center">
+    <div className="h-100 sticky top-0 flex w-full justify-center pt-5">
       {isRecording ? (
         <div className="border-5 align-content-center border-black-400 flex flex-row justify-between rounded-md border bg-indigo-100 px-5 py-1">
           <button
             type="button"
-            className="mx-2 rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+            className="mx-2 cursor-pointer rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
             onClick={cancelRecording}
           >
             Cancel
@@ -36,14 +36,14 @@ export const RecordingPanel = () => {
 
           <button
             type="button"
-            className="mx-2 rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+            className="mx-2 cursor-pointer rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
             onClick={isPaused ? resumeRecording : pauseRecording}
           >
             {isPaused ? 'Resume' : 'Pause'}
           </button>
           <button
             type="button"
-            className="mx-2 rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+            className="mx-2 cursor-pointer rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
             onClick={stopRecording}
           >
             Done
