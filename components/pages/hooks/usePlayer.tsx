@@ -32,6 +32,7 @@ const usePlayer = (): UsePlayer => {
         isPlaying: false,
         isPaused: false,
         isStopped: true,
+        currentUrl: null,
       }));
     };
 

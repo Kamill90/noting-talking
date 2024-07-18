@@ -4,7 +4,6 @@ import { v } from 'convex/values';
 import Replicate from 'replicate';
 import { internal } from './_generated/api';
 import { internalAction, internalMutation } from './_generated/server';
-
 const replicate = new Replicate({
   auth: process.env.REPLICATE_API_KEY,
 });
@@ -22,33 +21,27 @@ export const chat = internalAction({
     id: v.id('notes'),
   },
   handler: async (ctx, args) => {
-    // add try catch
-    const replicateOutput = (await replicate.run(
-      'openai/whisper:4d50797290df275329f202e48c76360b3f22b08d28c196cbc54600319435f8d2',
-      {
-        input: {
-          audio: args.fileUrl,
-          model: 'large-v3',
-          translate: false,
-          temperature: 0,
-          transcription: 'plain text',
-          suppress_tokens: '-1',
-          logprob_threshold: -1,
-          no_speech_threshold: 0.6,
-          condition_on_previous_text: true,
-          compression_ratio_threshold: 2.4,
-          temperature_increment_on_fallback: 0.2,
-        },
-      },
-    )) as whisperOutput;
-
-    const transcript = replicateOutput.transcription || 'error';
-
-    await ctx.runMutation(internal.whisper.saveTranscript, {
-      id: args.id,
-      transcript,
-      transcriptOnly: false,
-    });
+    try {
+      const replicateOutput = (await replicate.run(
+        'openai/whisper:4d50797290df275329f202e48c76360b3f22b08d28c196cbc54600319435f8d2',
+        {
+          input: {
+            audio: args.fileUrl,
+            model: "medium",
+            translate: false
+          }
+        }
+      )) as whisperOutput;
+      const transcript = replicateOutput.transcription || 'error';
+  
+      await ctx.runMutation(internal.whisper.saveTranscript, {
+        id: args.id,
+        transcript,
+        transcriptOnly: false,
+      });
+    } catch(error) {
+      // setError()
+    }
   },
 });
 
