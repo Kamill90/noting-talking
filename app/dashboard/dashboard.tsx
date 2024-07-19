@@ -1,5 +1,6 @@
 'use client';
 import usePlayer from '@/components/pages/hooks/usePlayer';
+import InlineLoader from '@/components/ui/InlineLoader';
 import { api } from '@/convex/_generated/api';
 import { Id } from '@/convex/_generated/dataModel';
 import { timestampToDate } from '@/convex/utils';
@@ -79,79 +80,88 @@ export default function DashboardHomePage({
 
   const renderList = () => {
     const filteredNotes = allNotes.filter((note) => {
-      return note.title?.toLowerCase().match(searchQuery.toLowerCase());
+      return searchQuery ? note.title?.toLowerCase().match(searchQuery.toLowerCase()) : true;
     });
 
-    return filteredNotes.map((note) => {
-      return (
-        <li key={note._id} className="flex flex-row justify-between gap-x-6 border px-8 py-5">
-          <div className="flex w-14 flex-row items-center justify-start">
-            {playerState.currentUrl === note.audioFileUrl ? (
-              <>
-                {playerState.isPaused ? (
-                  <PlayIcon
-                    type="button"
-                    className="mr-2 w-5 cursor-pointer opacity-100 transition-all duration-1000 ease-in-out hover:opacity-75"
-                    onClick={resume}
-                  />
-                ) : (
-                  <PauseIcon
-                    type="button"
-                    className="mr-2 w-5 cursor-pointer opacity-100 transition-all duration-1000 ease-in-out hover:opacity-75"
-                    onClick={pause}
-                  />
-                )}
+    return filteredNotes
+      .sort((a, b) => b._creationTime - a._creationTime)
+      .map((note) => {
+        return (
+          <li key={note._id} className="flex flex-row justify-between gap-x-6 border px-8 py-5">
+            <div className="flex w-14 flex-row items-center justify-start">
+              {playerState.currentUrl === note.audioFileUrl ? (
+                <>
+                  {playerState.isPaused ? (
+                    <PlayIcon
+                      type="button"
+                      className="mr-2 w-5 cursor-pointer opacity-100 transition-all duration-1000 ease-in-out hover:opacity-75"
+                      onClick={resume}
+                    />
+                  ) : (
+                    <PauseIcon
+                      type="button"
+                      className="mr-2 w-5 cursor-pointer opacity-100 transition-all duration-1000 ease-in-out hover:opacity-75"
+                      onClick={pause}
+                    />
+                  )}
 
-                <SquareIcon
+                  <SquareIcon
+                    className="mr-2 w-5 cursor-pointer opacity-100 transition-all duration-1000 ease-in-out hover:opacity-75"
+                    onClick={stop}
+                  />
+                </>
+              ) : (
+                <PlayIcon
+                  type="button"
                   className="mr-2 w-5 cursor-pointer opacity-100 transition-all duration-1000 ease-in-out hover:opacity-75"
-                  onClick={stop}
+                  onClick={() => {
+                    play(note.audioFileUrl);
+                  }}
                 />
-              </>
-            ) : (
-              <PlayIcon
-                type="button"
-                className="mr-2 w-5 cursor-pointer opacity-100 transition-all duration-1000 ease-in-out hover:opacity-75"
-                onClick={() => {
-                  play(note.audioFileUrl);
-                }}
-              />
-            )}
-          </div>
+              )}
+            </div>
 
-          <Link href={`/recording/${note._id}`} className="flex min-w-0 basis-1/2 gap-x-4">
-            <div className="min-w-0 flex-auto self-center">
-              <p className="text-sm font-semibold leading-6 text-gray-900">{note.title}</p>
-            </div>
-          </Link>
-          {note._creationTime && (
-            <div className="flex-end min-w-0 self-center">
-              <p className="mx-50 text-sm font-semibold leading-6 text-gray-900">
-                {timestampToDate(note._creationTime)}
-              </p>
-            </div>
-          )}
-          <Menu as="div" className="flex-end relative inline-block self-center text-left">
-            <div>
-              <MenuButton className="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
-                Options
-              </MenuButton>
-            </div>
-            <Transition
-              enter="transition ease-out duration-100"
-              enterFrom="transform opacity-0 scale-95"
-              enterTo="transform opacity-100 scale-100"
-              leave="transition ease-in duration-75"
-              leaveFrom="transform opacity-100 scale-100"
-              leaveTo="transform opacity-0 scale-95"
-            >
-              <MenuItems className="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                <div className="py-1">{actions.map((item) => actionItems({ item, note }))}</div>
-              </MenuItems>
-            </Transition>
-          </Menu>
-        </li>
-      );
-    });
+            {note.generatingTitle || note.generatingTranscript ? (
+              <div className="flex basis-1/2 items-center">
+                <p className="text-sm font-semibold leading-6 text-gray-900">Progressing...</p>
+                <InlineLoader />
+              </div>
+            ) : (
+              <Link href={`/recording/${note._id}`} className="flex min-w-0 basis-1/2 gap-x-4">
+                <div className="min-w-0 flex-auto self-center">
+                  <p className="text-sm font-semibold leading-6 text-gray-900">{note.title}</p>
+                </div>
+              </Link>
+            )}
+            {note._creationTime && (
+              <div className="flex-end min-w-0 self-center">
+                <p className="mx-50 text-sm font-semibold leading-6 text-gray-900">
+                  {timestampToDate(note._creationTime)}
+                </p>
+              </div>
+            )}
+            <Menu as="div" className="flex-end relative inline-block self-center text-left">
+              <div>
+                <MenuButton className="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
+                  Options
+                </MenuButton>
+              </div>
+              <Transition
+                enter="transition ease-out duration-100"
+                enterFrom="transform opacity-0 scale-95"
+                enterTo="transform opacity-100 scale-100"
+                leave="transition ease-in duration-75"
+                leaveFrom="transform opacity-100 scale-100"
+                leaveTo="transform opacity-0 scale-95"
+              >
+                <MenuItems className="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                  <div className="py-1">{actions.map((item) => actionItems({ item, note }))}</div>
+                </MenuItems>
+              </Transition>
+            </Menu>
+          </li>
+        );
+      });
   };
   return (
     <>

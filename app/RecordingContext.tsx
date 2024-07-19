@@ -73,7 +73,7 @@ export const RecordingContextProvider: React.FC<{ children: ReactNode }> = ({ ch
             storageId,
           });
 
-          router.push(`/recording/${noteId}`);
+          // router.push(`/recording/${noteId}`);
         }
       };
     } catch (err) {

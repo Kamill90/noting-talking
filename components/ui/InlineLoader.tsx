@@ -1,5 +1,5 @@
-const InlineLoader = ({ text }: { text: string }) => (
-  <div className="mx-auto flex max-w-7xl sm:px-6 lg:px-8">
+const InlineLoader = ({ text }: { text?: string }) => (
+  <div className="mx-2">
     <svg
       className="animate-spin self-center text-gray-300"
       viewBox="0 0 64 64"

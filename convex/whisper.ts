@@ -1,18 +1,16 @@
 ('use node');
 
 import { v } from 'convex/values';
-import Replicate from 'replicate';
+import OpenAI, { toFile } from 'openai';
 import { internal } from './_generated/api';
 import { internalAction, internalMutation } from './_generated/server';
-const replicate = new Replicate({
-  auth: process.env.REPLICATE_API_KEY,
+
+const openai = new OpenAI({
+  apiKey: process.env.OPEN_AI_API_KEY,
 });
 
-interface whisperOutput {
-  detected_language: string;
-  segments: any;
-  transcription: string;
-  translation: string | null;
+interface ExtendedFilePropertyBag extends FilePropertyBag {
+  contentType?: string;
 }
 
 export const chat = internalAction({
@@ -22,25 +20,22 @@ export const chat = internalAction({
   },
   handler: async (ctx, args) => {
     try {
-      const replicateOutput = (await replicate.run(
-        'openai/whisper:4d50797290df275329f202e48c76360b3f22b08d28c196cbc54600319435f8d2',
-        {
-          input: {
-            audio: args.fileUrl,
-            model: "medium",
-            translate: false
-          }
-        }
-      )) as whisperOutput;
-      const transcript = replicateOutput.transcription || 'error';
-  
+      var audio_file = await fetch(args.fileUrl);
+      const transcription = await openai.audio.transcriptions.create({
+        file: await toFile(audio_file, 'audio.wav', {
+          contentType: 'audio/wav',
+        } as ExtendedFilePropertyBag),
+        model: 'whisper-1',
+      });
+
       await ctx.runMutation(internal.whisper.saveTranscript, {
         id: args.id,
-        transcript,
+        transcript: transcription.text,
         transcriptOnly: false,
       });
-    } catch(error) {
-      // setError()
+    } catch (error) {
+      console.log('error', error);
+      //TODO do something with it
     }
   },
 });
