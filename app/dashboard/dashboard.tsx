@@ -14,6 +14,7 @@ import { PauseIcon, PlayIcon, SquareIcon } from 'lucide-react';
 import Link from 'next/link';
 import { useCallback, useContext, useEffect, useState } from 'react';
 import { RecordingContext } from '../RecordingContext';
+import { EllipsisVerticalIcon } from '@heroicons/react/20/solid';
 
 export default function DashboardHomePage({
   preloadedNotes,
@@ -46,7 +47,7 @@ export default function DashboardHomePage({
 
   const actions = [
     {
-      title: 'remove',
+      title: 'Delete',
       onClick: (id: Id<'notes'>) => {
         sendGAEvent('event', 'remove_note', { note_id: id });
         mutateNoteRemove({ id });
@@ -127,27 +128,27 @@ export default function DashboardHomePage({
 
             {note.generatingTitle || note.generatingTranscript ? (
               <div className="flex basis-1/2 items-center">
-                <p className="text-sm font-semibold leading-6 text-gray-900">Progressing...</p>
+                <p className="text-sm font-semibold leading-6 text-zinc-800 font-montserrat">Progressing...</p>
                 <InlineLoader />
               </div>
             ) : (
               <Link href={`/recording/${note._id}`} className="flex min-w-0 basis-1/2 gap-x-4">
                 <div className="min-w-0 flex-auto self-center">
-                  <p className="text-sm font-semibold leading-6 text-gray-900">{note.title}</p>
+                  <p className="text-sm font-semibold font-montserrat leading-6 text-zinc-800">{note.title}</p>
                 </div>
               </Link>
             )}
             {note._creationTime && (
               <div className="flex-end min-w-0 self-center">
-                <p className="mx-50 text-sm font-semibold leading-6 text-gray-900">
+                <p className="mx-50 text-sm leading-6 text-zinc-800">
                   {timestampToDate(note._creationTime)}
                 </p>
               </div>
             )}
             <Menu as="div" className="flex-end relative inline-block self-center text-left">
               <div>
-                <MenuButton className="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
-                  Options
+                <MenuButton className="inline-flex w-8 h-8 justify-center items-center rounded-full bg-white text-gray-400 hover:text-gray-600 focus:outline-none">
+                  <EllipsisVerticalIcon className="w-5 h-5" aria-hidden="true" />
                 </MenuButton>
               </div>
               <Transition
@@ -181,14 +182,9 @@ export default function DashboardHomePage({
         <div className="py-10">
           <main>
             <div className="mx-auto flex w-full max-w-7xl flex-row justify-between px-4 sm:px-6">
-              <h1 className="mb-5 text-base font-semibold leading-7 text-gray-900">
-                Your voice notes
-              </h1>
-            </div>
-            <div className="mx-auto flex w-full max-w-7xl flex-row justify-between px-4 sm:px-6">
               <div className="relative flex h-12 items-center self-center">
                 <input
-                  placeholder="Search"
+                  placeholder="Search for a voice note"
                   type="text"
                   name="search"
                   id="search"
@@ -198,15 +194,15 @@ export default function DashboardHomePage({
                     setSearchQuery(newValue);
                     debouncedSendGAEvent(newValue);
                   }}
-                  className="block h-full w-full rounded-md border-0 py-1.5 pr-14 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                  className="block h-full w-full font-medium rounded-full border-0 py-1.5 pr-14 text-gray-900 shadow-sm ring-1 ring-inset ring-zinc-400 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-zinc-800 sm:text-sm sm:leading-6 font-montserrat"
                 />
               </div>
               <button
                 disabled={isRecording}
                 type="button"
                 className={classNames(
-                  isRecording ? 'bg-indigo-100' : 'bg-indigo-600 hover:bg-indigo-500',
-                  '"flex-end focus-visible:outline-indigo-600" rounded-md px-3.5 py-2.5 text-xl font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2',
+                  isRecording ? 'bg-zinc-300' : 'bg-zinc-800 hover:bg-zinc-700',
+                  'rounded-full px-3.5 py-2.5 text-md font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-600 font-montserrat'
                 )}
                 onClick={() => {
                   sendGAEvent('event', 'start_recording');
