@@ -25,10 +25,10 @@ export const RecordingPanel = () => {
         <div className="border-5 align-content-center border-zinc-700 flex flex-row items-center justify-between rounded-full border bg-zinc-800 px-5 py-1 w-[350px]">
           <button
             type="button"
-            className="mr-3 cursor-pointer rounded-md p-2 text-white hover:bg-zinc-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white bg-zinc-600"
+            className="mr-3 cursor-pointer rounded-md p-2 text-red-500 font-medium hover:bg-red-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white bg-red-500 bg-opacity-20 font-montserrat"
             onClick={cancelRecording}
           >
-            <TrashIcon className="h-5 w-5" />
+            Cancel
           </button>
 
           <div className="flex items-center">
