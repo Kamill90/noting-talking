@@ -80,7 +80,7 @@ export default function RecordingDesktop({ note, customPoints, customTranscripti
               sendGAEvent('event', 'create_custom_transcription', { point_title: point.title });
               createCustomTranscription({ noteId: note._id, transcript: transcription, point });
             }}
-            className="group flex items-center px-4 py-2 text-sm text-gray-700 data-[focus]:bg-gray-100 data-[focus]:text-gray-900"
+            className="group flex items-center px-4 py-2 text-sm text-zinc-800 data-[focus]:bg-gray-100 data-[focus]:text-zinc-800 font-montserrat"
           >
             {point.title}
           </button>
@@ -129,49 +129,49 @@ export default function RecordingDesktop({ note, customPoints, customTranscripti
         </div>
       )}
       <div className="min-h-screen">
-        <div className="py-10">
-          <header>
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <header className="py-10">
             <Link
               href="/dashboard"
-              className="text-m mx-auto block flex max-w-7xl py-2 font-semibold text-blue-400 hover:bg-gray-50"
+              className="text-m block flex py-2 font-semibold text-blue-400 hover:bg-gray-50"
             >
               <ChevronLeft className="shrink-0 text-blue-400" aria-hidden="true" />
               Dashboard
             </Link>
-            <div className="mx-auto flex max-w-7xl justify-between px-4 sm:px-6 lg:px-8">
-              <h1 className="text-3xl font-bold leading-tight tracking-tight text-gray-900">
+            <div className="flex justify-between pt-2">
+              <h1 className="text-xl font-semibold leading-tight tracking-tight text-zinc-800">
                 {title}
               </h1>
-              <h4 className="text-l font-bold leading-tight tracking-tight text-gray-400">
+              <h4 className="text-md font-semibold leading-tight tracking-tight text-zinc-500">
                 {timestampToDate(_creationTime)}
               </h4>
             </div>
           </header>
           <main>
             <div className="my-10">
-              <div className="mx-auto flex max-w-7xl justify-between sm:px-6 lg:px-8">
-                <h4 className="text-l text-gray-400">Summary</h4>
+              <div className="flex justify-between">
+                <h4 className="text-zinc-800 font-semibold pb-2">Summary</h4>
               </div>
-              <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">{summary}</div>
+              <div className="text-zinc-800">{summary}</div>
             </div>
             <Transcription note={note} target="transcription" />
             {customTranscriptions.length
               ? customTranscriptions.map((customTranscription) =>
-                  customTranscription.error ? null : customTranscription.loading ? (
-                    <InlineLoader
-                      key={customTranscription._id}
-                      text={`Generating ${customTranscription.title}`}
-                    />
-                  ) : (
-                    <CustomTranscription key={customTranscription._id} note={customTranscription} />
-                  ),
-                )
+                customTranscription.error ? null : customTranscription.loading ? (
+                  <InlineLoader
+                    key={customTranscription._id}
+                    text={`Generating ${customTranscription.title}`}
+                  />
+                ) : (
+                  <CustomTranscription key={customTranscription._id} note={customTranscription} />
+                ),
+              )
               : null}
           </main>
         </div>
         {!loading && (
           <footer className="z-1 sticky bottom-0 bg-white">
-            <div className="mx-auto min-h-full max-w-7xl py-10">
+            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10">
               <div className="text-gray-400">Create</div>
               <div className="flex flex-row justify-between">
                 <div>
