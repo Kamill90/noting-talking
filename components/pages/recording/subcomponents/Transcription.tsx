@@ -46,14 +46,14 @@ export const Transcription = ({
 
   return (
     <div className="my-10">
-      <div className="mx-auto flex max-w-7xl justify-between sm:px-6 lg:px-8">
-        <h4 className="text-l text-gray-400">{Title[target]}</h4>
+      <div className="flex justify-between">
+        <h4 className="text-md text-zinc-800 font-semibold">{Title[target]}</h4>
         <div>
-          <button className="mx-5 text-blue-400" onClick={handleCopy}>
+          <button className="mx-5 text-sky-600" onClick={handleCopy}>
             Copy
           </button>
           {disabled ? (
-            <button className="mx-5 text-blue-400" onClick={handleEdit}>
+            <button className="mx-5 text-sky-600" onClick={handleEdit}>
               Edit
             </button>
           ) : (
@@ -64,12 +64,12 @@ export const Transcription = ({
         </div>
       </div>
       {disabled ? (
-        <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">{text}</div>
+        <div className="mt-2">{text}</div>
       ) : (
-        <div className="mx-auto block max-w-7xl">
+        <div className="mt-2">
           <textarea
             ref={textAreaRef}
-            className="mx-auto w-full resize-none border-0 px-8 pt-0"
+            className="w-full resize-none border-0 p-0"
             id="comment"
             defaultValue={text}
           />
