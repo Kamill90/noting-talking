@@ -12,6 +12,7 @@ import useCustomPoints from '../hooks/useCustomPoints';
 import { CustomTranscription } from './subcomponents/CustomTranscription';
 import Dialog from './subcomponents/Dialog';
 import { Transcription } from './subcomponents/Transcription';
+import { Toast } from '@/components/ui/Toast';
 
 interface Props {
   note: Doc<'notes'>;
@@ -100,6 +101,13 @@ export default function RecordingDesktop({ note, customPoints, customTranscripti
     ));
   };
 
+  const [showToast, setShowToast] = useState(false);
+
+  const handleCopy = () => {
+    setShowToast(true);
+    setTimeout(() => setShowToast(false), 1000); // Hide toast after 1 second
+  };
+
   return (
     <>
       <Dialog isOpen={isDialogOpen} close={closeDialog} submit={submitDialog} />
@@ -154,7 +162,7 @@ export default function RecordingDesktop({ note, customPoints, customTranscripti
               </div>
               <div className="text-zinc-800">{summary}</div>
             </div>
-            <Transcription note={note} target="transcription" />
+            <Transcription note={note} target="transcription" onCopy={handleCopy} />
             {customTranscriptions.length
               ? customTranscriptions.map((customTranscription) =>
                 customTranscription.error ? null : customTranscription.loading ? (
@@ -163,8 +171,12 @@ export default function RecordingDesktop({ note, customPoints, customTranscripti
                     text={`Generating ${customTranscription.title}`}
                   />
                 ) : (
-                  <CustomTranscription key={customTranscription._id} note={customTranscription} />
-                ),
+                  <CustomTranscription
+                    key={customTranscription._id}
+                    note={customTranscription}
+                    onCopy={handleCopy}
+                  />
+                )
               )
               : null}
           </main>
@@ -206,8 +218,7 @@ export default function RecordingDesktop({ note, customPoints, customTranscripti
                       </div>
                       {foldedCustomPoints.length && (
                         <MenuItems
-                          transition
-                          className="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 transition focus:outline-none data-[closed]:scale-95 data-[closed]:transform data-[closed]:opacity-0 data-[enter]:duration-100 data-[leave]:duration-75 data-[enter]:ease-out data-[leave]:ease-in"
+                          className="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none data-[closed]:scale-95 data-[closed]:transform data-[closed]:opacity-0 data-[enter]:duration-100 data-[leave]:duration-75 data-[enter]:ease-out data-[leave]:ease-in"
                         >
                           <div className="py-1">{renderCustomPoints()}</div>
                         </MenuItems>
@@ -223,6 +234,9 @@ export default function RecordingDesktop({ note, customPoints, customTranscripti
           </footer>
         )}
       </div>
+      {showToast && (
+        <Toast message="Copied to clipboard" onClose={() => setShowToast(false)} />
+      )}
     </>
   );
 }

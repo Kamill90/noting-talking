@@ -1,64 +1,87 @@
 import { api } from '@/convex/_generated/api';
-import { Doc } from '@/convex/_generated/dataModel';
+import { Id } from '@/convex/_generated/dataModel';
 import { useMutation } from 'convex/react';
 import { MutableRefObject, useRef, useState } from 'react';
 
-export const CustomTranscription = ({ note }: { note: Doc<'customTranscriptions'> }) => {
+export const CustomTranscription = ({
+  note,
+  onCopy,
+}: {
+  note: {
+    _id: Id<'customTranscriptions'>;
+    title: string;
+    value: string;
+  };
+  onCopy: () => void;
+}) => {
   const [disabled, setDisabled] = useState(true);
-  const textAreaRef: MutableRefObject<any> = useRef(null);
+  const textAreaRef: MutableRefObject<HTMLTextAreaElement | null> = useRef(null);
 
-  const mutateCustomTranscriptions = useMutation(
-    api.customTranscriptions.updateCustomTranscriptionsValue,
-  );
+  const mutateCustomTranscription = useMutation(api.customTranscriptions.updateCustomTranscriptionsValue);
 
   const handleCopy = () => {
     navigator.clipboard.writeText(note.value);
+    onCopy();
   };
 
   const handleEdit = () => {
     setDisabled(false);
     setTimeout(() => {
-      textAreaRef.current?.focus();
-      const textareaRef = textAreaRef.current || {};
-      textareaRef.selectionStart = textAreaRef.current?.value.length;
-      const scrollHeight = textAreaRef.current?.scrollHeight;
-
-      textAreaRef.current.style.height = scrollHeight + 'px';
+      if (textAreaRef.current) {
+        textAreaRef.current.focus();
+        textAreaRef.current.selectionStart = textAreaRef.current.value.length;
+        textAreaRef.current.style.height = `${textAreaRef.current.scrollHeight}px`;
+      }
     });
   };
 
   const handleSubmit = () => {
-    mutateCustomTranscriptions({ id: note._id, newValue: textAreaRef.current?.value });
+    if (textAreaRef.current) {
+      mutateCustomTranscription({
+        id: note._id,
+        newValue: textAreaRef.current.value
+      });
+    }
+    setDisabled(true);
+  };
+
+  const handleCancel = () => {
     setDisabled(true);
   };
 
   return (
-    <div className="my-10">
-      <div className="mx-auto flex max-w-7xl justify-between sm:px-6 lg:px-8">
-        <h4 className="text-l text-gray-400">{note.title}</h4>
+    <div className="pl-4 my-10">
+      <div className="flex justify-between items-center mb-2">
+        <h4 className="text-md text-zinc-800 font-semibold">{note.title}</h4>
         <div>
-          <button className="mx-5 text-blue-400" onClick={handleCopy}>
-            Copy
-          </button>
           {disabled ? (
-            <button className="mx-5 text-blue-400" onClick={handleEdit}>
-              Edit
+            <button className="px-3 py-1 text-sm text-sky-600 hover:bg-sky-50 rounded-md" onClick={handleCopy}>
+              Copy
             </button>
           ) : (
-            <button className="mx-5 text-green-400" onClick={handleSubmit}>
-              Save
+            <>
+              <button className="px-3 py-1 text-sm text-red-600 hover:bg-red-50 rounded-md mr-2" onClick={handleCancel}>
+                Cancel
+              </button>
+              <button className="px-3 py-1 text-sm text-green-600 hover:bg-green-50 rounded-md" onClick={handleSubmit}>
+                Save
+              </button>
+            </>
+          )}
+          {disabled && (
+            <button className="px-3 py-1 text-sm text-sky-600 hover:bg-sky-50 rounded-md ml-2" onClick={handleEdit}>
+              Edit
             </button>
           )}
         </div>
       </div>
       {disabled ? (
-        <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">{note.value}</div>
+        <div className="mt-2 text-zinc-800">{note.value}</div>
       ) : (
-        <div className="mx-auto block max-w-7xl">
+        <div className="mt-2">
           <textarea
             ref={textAreaRef}
-            className="mx-auto w-full resize-none border-0 px-8 pt-0"
-            id="comment"
+            className="w-full resize-none border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent"
             defaultValue={note.value}
           />
         </div>
