@@ -129,7 +129,7 @@ export default function DashboardHomePage({
             {note.generatingTitle || note.generatingTranscript ? (
               <div className="flex basis-1/2 items-center">
                 <p className="text-sm font-semibold leading-6 text-zinc-800 font-montserrat">Progressing...</p>
-                <InlineLoader />
+                <InlineLoader text="" />
               </div>
             ) : (
               <Link href={`/recording/${note._id}`} className="flex min-w-0 basis-1/2 gap-x-4">

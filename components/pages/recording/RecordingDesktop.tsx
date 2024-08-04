@@ -1,18 +1,18 @@
 import InlineLoader from '@/components/ui/InlineLoader';
+import { Toast } from '@/components/ui/Toast';
 import { api } from '@/convex/_generated/api';
 import { Doc, Id } from '@/convex/_generated/dataModel';
 import { timestampToDate } from '@/convex/utils';
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react';
 import { sendGAEvent } from '@next/third-parties/google';
 import { useMutation } from 'convex/react';
-import { ChevronDownIcon, ChevronLeft, TrashIcon } from 'lucide-react';
+import { ArrowLeft, ChevronDownIcon, TrashIcon } from 'lucide-react';
 import Link from 'next/link';
-import { useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import useCustomPoints from '../hooks/useCustomPoints';
 import { CustomTranscription } from './subcomponents/CustomTranscription';
 import Dialog from './subcomponents/Dialog';
 import { Transcription } from './subcomponents/Transcription';
-import { Toast } from '@/components/ui/Toast';
 
 interface Props {
   note: Doc<'notes'>;
@@ -108,6 +108,46 @@ export default function RecordingDesktop({ note, customPoints, customTranscripti
     setTimeout(() => setShowToast(false), 1000); // Hide toast after 1 second
   };
 
+  const customTranscriptionRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
+
+  const setCustomTranscriptionRef = useCallback((element: HTMLDivElement | null, id: string) => {
+    if (element) {
+      customTranscriptionRefs.current[id] = element;
+    }
+  }, []);
+
+  useEffect(() => {
+    const loadingTranscription = customTranscriptions.find(t => t.loading);
+    if (loadingTranscription) {
+      const ref = customTranscriptionRefs.current[loadingTranscription._id];
+      if (ref) {
+        ref.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }
+  }, [customTranscriptions]);
+
+  const createCustomTranscriptionWithScroll = (params: any) => {
+    createCustomTranscription(params);
+    setTimeout(() => {
+      const newTranscription = customTranscriptions.find(t => t.loading);
+      if (newTranscription) {
+        const ref = customTranscriptionRefs.current[newTranscription._id];
+        if (ref) {
+          ref.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }
+    }, 100); // Small delay to ensure the new transcription is added to the DOM
+  };
+
+  const handleCustomTranscriptionRendered = useCallback((id: string) => {
+    setTimeout(() => {
+      const ref = customTranscriptionRefs.current[id];
+      if (ref) {
+        ref.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }, 100);
+  }, []);
+
   return (
     <>
       <Dialog isOpen={isDialogOpen} close={closeDialog} submit={submitDialog} />
@@ -136,66 +176,73 @@ export default function RecordingDesktop({ note, customPoints, customTranscripti
           </div>
         </div>
       )}
-      <div className="min-h-screen">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <header className="py-10">
-            <Link
-              href="/dashboard"
-              className="text-m block flex py-2 font-semibold text-blue-400 hover:bg-gray-50"
-            >
-              <ChevronLeft className="shrink-0 text-blue-400" aria-hidden="true" />
-              Dashboard
-            </Link>
-            <div className="flex justify-between pt-2">
-              <h1 className="text-xl font-semibold leading-tight tracking-tight text-zinc-800">
+      <div className="min-h-screen flex flex-col">
+        <div className="flex-grow">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <header className="py-4">
+              <div className="flex items-center justify-between">
+                <Link
+                  href="/dashboard"
+                  className="inline-flex items-center px-3 py-1 text-sm text-sky-600 hover:bg-sky-50 rounded-md transition-colors duration-200 ease-in-out"
+                >
+                  <ArrowLeft className="mr-2 h-4 w-4" aria-hidden="true" />
+                  Back to dashboard
+                </Link>
+                <h4 className="text-sm text-zinc-500">
+                  {timestampToDate(_creationTime)}
+                </h4>
+              </div>
+              <h1 className="text-xl font-semibold leading-tight tracking-tight text-zinc-800 mt-2">
                 {title}
               </h1>
-              <h4 className="text-md font-semibold leading-tight tracking-tight text-zinc-500">
-                {timestampToDate(_creationTime)}
-              </h4>
-            </div>
-          </header>
-          <main>
-            <div className="my-10">
-              <div className="flex justify-between">
-                <h4 className="text-zinc-800 font-semibold pb-2">Summary</h4>
+            </header>
+            <main>
+              <div className="my-5">
+                <div className="flex justify-between">
+                  <h4 className="text-zinc-800 font-semibold pb-2">Summary</h4>
+                </div>
+                <div className="text-zinc-800">{summary}</div>
               </div>
-              <div className="text-zinc-800">{summary}</div>
-            </div>
-            <Transcription note={note} target="transcription" onCopy={handleCopy} />
-            {customTranscriptions.length
-              ? customTranscriptions.map((customTranscription) =>
-                customTranscription.error ? null : customTranscription.loading ? (
-                  <InlineLoader
-                    key={customTranscription._id}
-                    text={`Generating ${customTranscription.title}`}
-                  />
-                ) : (
-                  <CustomTranscription
-                    key={customTranscription._id}
-                    note={customTranscription}
-                    onCopy={handleCopy}
-                  />
+              <Transcription note={note} target="transcription" onCopy={handleCopy} />
+              {customTranscriptions.length
+                ? customTranscriptions.map((customTranscription) =>
+                  customTranscription.error ? null : customTranscription.loading ? (
+                    <div
+                      key={customTranscription._id}
+                      ref={(el) => setCustomTranscriptionRef(el, customTranscription._id)}
+                    >
+                      <InlineLoader
+                        text={`Generating ${customTranscription.title}`}
+                      />
+                    </div>
+                  ) : (
+                    <CustomTranscription
+                      key={customTranscription._id}
+                      note={customTranscription}
+                      onCopy={handleCopy}
+                      onRendered={handleCustomTranscriptionRendered}
+                    />
+                  )
                 )
-              )
-              : null}
-          </main>
+                : null}
+            </main>
+          </div>
         </div>
         {!loading && (
-          <footer className="z-1 sticky bottom-0 bg-white">
-            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10">
-              <div className="text-gray-400">Create</div>
-              <div className="flex flex-row justify-between">
-                <div>
+          <footer className="sticky bottom-0 bg-white border-t border-gray-200 mt-auto">
+            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-4">
+              <div className="flex flex-col space-y-2 sm:space-y-0 sm:flex-row sm:items-center">
+                <div className="text-sm text-gray-500 sm:w-24">Create new</div>
+                <div className="flex-grow flex flex-wrap gap-2 items-center">
                   {inlineCustomPoints.map((point) => (
                     <button
                       key={point._id}
-                      className="mr-5 text-blue-400"
+                      className="px-3 py-1 text-sm text-sky-600 hover:bg-sky-50 rounded-md"
                       onClick={() => {
                         sendGAEvent('event', 'create_custom_transcription', {
                           point_title: point.title,
                         });
-                        createCustomTranscription({
+                        createCustomTranscriptionWithScroll({
                           noteId: note._id,
                           transcript: transcription,
                           point,
@@ -208,27 +255,30 @@ export default function RecordingDesktop({ note, customPoints, customTranscripti
                   {foldedCustomPoints.length ? (
                     <Menu as="div" className="relative inline-block text-left">
                       <div>
-                        <MenuButton className="inline-flex w-full justify-center gap-x-1.5 bg-white px-3 py-2 text-sm font-semibold text-blue-400">
+                        <MenuButton className="px-3 py-1 text-sm text-sky-600 hover:bg-sky-50 rounded-md inline-flex items-center">
                           Custom
                           <ChevronDownIcon
                             aria-hidden="true"
-                            className="-mr-1 h-5 w-5 text-gray-400"
+                            className="ml-1 h-4 w-4"
                           />
                         </MenuButton>
                       </div>
                       {foldedCustomPoints.length && (
                         <MenuItems
-                          className="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none data-[closed]:scale-95 data-[closed]:transform data-[closed]:opacity-0 data-[enter]:duration-100 data-[leave]:duration-75 data-[enter]:ease-out data-[leave]:ease-in"
+                          className="absolute left-0 z-10 mt-2 w-56 origin-top-left rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
                         >
                           <div className="py-1">{renderCustomPoints()}</div>
                         </MenuItems>
                       )}
                     </Menu>
                   ) : null}
+                  <button
+                    className="px-3 py-1 text-sm text-sky-600 hover:bg-sky-50 rounded-md"
+                    onClick={openDialog}
+                  >
+                    Add Custom
+                  </button>
                 </div>
-                <button className="mr-5 text-blue-400" onClick={openDialog}>
-                  Add Custom
-                </button>
               </div>
             </div>
           </footer>
