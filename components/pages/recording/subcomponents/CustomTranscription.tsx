@@ -1,11 +1,12 @@
 import { api } from '@/convex/_generated/api';
 import { Id } from '@/convex/_generated/dataModel';
 import { useMutation } from 'convex/react';
-import { MutableRefObject, useRef, useState } from 'react';
+import { MutableRefObject, useRef, useState, useEffect } from 'react';
 
 export const CustomTranscription = ({
   note,
   onCopy,
+  onRendered,
 }: {
   note: {
     _id: Id<'customTranscriptions'>;
@@ -13,9 +14,11 @@ export const CustomTranscription = ({
     value: string;
   };
   onCopy: () => void;
+  onRendered: (id: string) => void;
 }) => {
   const [disabled, setDisabled] = useState(true);
   const textAreaRef: MutableRefObject<HTMLTextAreaElement | null> = useRef(null);
+  const ref = useRef<HTMLDivElement>(null);
 
   const mutateCustomTranscription = useMutation(api.customTranscriptions.updateCustomTranscriptionsValue);
 
@@ -49,8 +52,14 @@ export const CustomTranscription = ({
     setDisabled(true);
   };
 
+  useEffect(() => {
+    if (ref.current) {
+      onRendered(note._id);
+    }
+  }, [note._id, onRendered]);
+
   return (
-    <div className="pl-4 my-10">
+    <div ref={ref} className="pl-4 my-10">
       <div className="flex justify-between items-center mb-2">
         <h4 className="text-md text-zinc-800 font-semibold">{note.title}</h4>
         <div>
