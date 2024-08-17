@@ -53,25 +53,37 @@ export const Transcription = ({
 
   return (
     <div className="my-10">
-      <div className="flex justify-between items-center mb-2">
-        <h4 className="text-md text-zinc-800 font-semibold">{Title[target]}</h4>
+      <div className="mb-2 flex items-center justify-between">
+        <h4 className="text-md font-semibold text-zinc-800">{Title[target]}</h4>
         <div>
           {disabled ? (
-            <button className="px-3 py-1 text-sm text-sky-600 hover:bg-sky-50 rounded-md" onClick={handleCopy}>
+            <button
+              className="rounded-md px-3 py-1 text-sm text-sky-600 hover:bg-sky-50"
+              onClick={handleCopy}
+            >
               Copy
             </button>
           ) : (
             <>
-              <button className="px-3 py-1 text-sm text-red-600 hover:bg-red-50 rounded-md mr-2" onClick={handleCancel}>
+              <button
+                className="mr-2 rounded-md px-3 py-1 text-sm text-red-600 hover:bg-red-50"
+                onClick={handleCancel}
+              >
                 Cancel
               </button>
-              <button className="px-3 py-1 text-sm text-green-600 hover:bg-green-50 rounded-md" onClick={handleSubmit}>
+              <button
+                className="rounded-md px-3 py-1 text-sm text-green-600 hover:bg-green-50"
+                onClick={handleSubmit}
+              >
                 Save
               </button>
             </>
           )}
           {disabled && (
-            <button className="px-3 py-1 text-sm text-sky-600 hover:bg-sky-50 rounded-md ml-2" onClick={handleEdit}>
+            <button
+              className="ml-2 rounded-md px-3 py-1 text-sm text-sky-600 hover:bg-sky-50"
+              onClick={handleEdit}
+            >
               Edit
             </button>
           )}
@@ -83,7 +95,7 @@ export const Transcription = ({
         <div className="mt-2">
           <textarea
             ref={textAreaRef}
-            className="w-full resize-none border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent"
+            className="w-full resize-none rounded-md border border-gray-300 p-2 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-sky-500"
             id="comment"
             defaultValue={text}
           />

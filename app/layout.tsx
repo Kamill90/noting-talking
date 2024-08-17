@@ -8,8 +8,6 @@ import { RecordingContextProvider } from './RecordingContext';
 import { RecordingPanel } from './RecordingPanel';
 import './globals.css';
 
-
-
 let title = 'Create content with your voice';
 let description =
   'Convert your voice notes into tweets, blog posts, summaries, loose notes and clear action items using AI.';

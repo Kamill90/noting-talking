@@ -6,7 +6,7 @@ export default async function Header() {
   const user = await currentUser();
   return (
     <div className="container relative m-0 mx-auto pb-10">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
+      <div className="mx-auto flex max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         {/* logo */}
         <Link className="flex w-fit items-center gap-[2px]" href="/dashboard">
           <img
