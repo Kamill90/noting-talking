@@ -1,3 +1,4 @@
+import { GoogleTagManager } from '@next/third-parties/google';
 import { Analytics } from '@vercel/analytics/react';
 import type { Metadata } from 'next';
 import { Toaster } from 'react-hot-toast';
@@ -51,6 +52,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           </RecordingContextProvider>
         </ConvexClientProvider>
       </body>
+      <GoogleTagManager gtmId="G-T9MVK85ZBJ" />
     </html>
   );
 }
