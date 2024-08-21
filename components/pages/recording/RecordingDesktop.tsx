@@ -6,7 +6,7 @@ import { timestampToDate } from '@/convex/utils';
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react';
 import { sendGAEvent } from '@next/third-parties/google';
 import { useMutation } from 'convex/react';
-import { ArrowLeft, ChevronDownIcon, TrashIcon } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import useCustomPoints from '../hooks/useCustomPoints';
@@ -51,8 +51,9 @@ export default function RecordingDesktop({ note, customPoints, customTranscripti
 
   const { addCustomPoints, deleteCustomPoint } = useCustomPoints();
 
-  const inlineCustomPoints = customPoints.slice(0, 4);
-  const foldedCustomPoints = customPoints.slice(4, customPoints.length);
+  const MAX_INLINE_CUSTOM_POINTS = 3;
+  const inlineCustomPoints = customPoints.slice(0, MAX_INLINE_CUSTOM_POINTS);
+  const dropdownCustomPoints = customPoints.slice(MAX_INLINE_CUSTOM_POINTS);
 
   const openDialog = () => {
     sendGAEvent('event', 'open_custom_point_dialog');
@@ -73,30 +74,24 @@ export default function RecordingDesktop({ note, customPoints, customTranscripti
   };
 
   const renderCustomPoints = () => {
-    return foldedCustomPoints.map((point) => (
+    return dropdownCustomPoints.map((point) => (
       <MenuItem key={point._id}>
-        <div className="flex flex-row justify-between">
+        {({ active }) => (
           <button
+            className={`${active ? 'bg-gray-100 text-gray-900' : 'text-gray-700'
+              } group flex w-full items-center px-4 py-2 text-sm`}
             onClick={() => {
               sendGAEvent('event', 'create_custom_transcription', { point_title: point.title });
-              createCustomTranscription({ noteId: note._id, transcript: transcription, point });
+              createCustomTranscriptionWithScroll({
+                noteId: note._id,
+                transcript: transcription,
+                point,
+              });
             }}
-            className="group flex items-center px-4 py-2 font-montserrat text-sm text-zinc-800 data-[focus]:bg-gray-100 data-[focus]:text-zinc-800"
           >
             {point.title}
           </button>
-          <button
-            onClick={() => {
-              sendGAEvent('event', 'delete_custom_point', { point_id: point._id });
-              deleteCustomPoint(point._id);
-            }}
-          >
-            <TrashIcon
-              aria-hidden="true"
-              className="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500"
-            />
-          </button>
-        </div>
+        )}
       </MenuItem>
     ));
   };
@@ -150,7 +145,12 @@ export default function RecordingDesktop({ note, customPoints, customTranscripti
 
   return (
     <>
-      <Dialog isOpen={isDialogOpen} close={closeDialog} submit={submitDialog} />
+      <Dialog
+        isOpen={isDialogOpen}
+        close={closeDialog}
+        submit={submitDialog}
+        title="Add custom instructions"
+      />
       {loading && (
         <div className="z-2 absolute h-full w-full bg-slate-300 opacity-70">
           <div
@@ -204,22 +204,22 @@ export default function RecordingDesktop({ note, customPoints, customTranscripti
               <Transcription note={note} target="transcription" onCopy={handleCopy} />
               {customTranscriptions.length
                 ? customTranscriptions.map((customTranscription) =>
-                    customTranscription.error ? null : customTranscription.loading ? (
-                      <div
-                        key={customTranscription._id}
-                        ref={(el) => setCustomTranscriptionRef(el, customTranscription._id)}
-                      >
-                        <InlineLoader text={`Generating ${customTranscription.title}`} />
-                      </div>
-                    ) : (
-                      <CustomTranscription
-                        key={customTranscription._id}
-                        note={customTranscription}
-                        onCopy={handleCopy}
-                        onRendered={handleCustomTranscriptionRendered}
-                      />
-                    ),
-                  )
+                  customTranscription.error ? null : customTranscription.loading ? (
+                    <div
+                      key={customTranscription._id}
+                      ref={(el) => setCustomTranscriptionRef(el, customTranscription._id)}
+                    >
+                      <InlineLoader text={`Generating ${customTranscription.title}`} />
+                    </div>
+                  ) : (
+                    <CustomTranscription
+                      key={customTranscription._id}
+                      note={customTranscription}
+                      onCopy={handleCopy}
+                      onRendered={handleCustomTranscriptionRendered}
+                    />
+                  ),
+                )
                 : null}
             </main>
           </div>
@@ -248,21 +248,19 @@ export default function RecordingDesktop({ note, customPoints, customTranscripti
                       {point.title}
                     </button>
                   ))}
-                  {foldedCustomPoints.length ? (
+                  {dropdownCustomPoints.length > 0 && (
                     <Menu as="div" className="relative inline-block text-left">
                       <div>
                         <MenuButton className="inline-flex items-center rounded-md px-3 py-1 text-sm text-sky-600 hover:bg-sky-50">
-                          Custom
-                          <ChevronDownIcon aria-hidden="true" className="ml-1 h-4 w-4" />
+                          More
+                          <ChevronUpIcon className="ml-2 -mr-1 h-5 w-5" aria-hidden="true" />
                         </MenuButton>
                       </div>
-                      {foldedCustomPoints.length && (
-                        <MenuItems className="absolute left-0 z-10 mt-2 w-56 origin-top-left rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                          <div className="py-1">{renderCustomPoints()}</div>
-                        </MenuItems>
-                      )}
+                      <MenuItems className="absolute bottom-full left-0 z-10 mb-2 w-56 origin-bottom-left rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                        <div className="py-1">{renderCustomPoints()}</div>
+                      </MenuItems>
                     </Menu>
-                  ) : null}
+                  )}
                   <button
                     className="rounded-md px-3 py-1 text-sm text-sky-600 hover:bg-sky-50"
                     onClick={openDialog}
