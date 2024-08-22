@@ -6,7 +6,6 @@ import { useCallback } from 'react';
 const useCustomPoints = () => {
   const createCustomPointMutation = useMutation(api.customPoints.createCustomPoint);
   const deleteCustomPointMutation = useMutation(api.customPoints.deleteCustomPoint);
-  const editCustomPointMutation = useMutation(api.customPoints.editCustomPoint);
 
   const addCustomPoints = useCallback((title: string, description: string) => {
     if (!title || !description) {
@@ -19,17 +18,9 @@ const useCustomPoints = () => {
     deleteCustomPointMutation({ id });
   }, []);
 
-  const editCustomPoint = useCallback(
-    (id: Id<'customPoints'>, title: string, description: string) => {
-      editCustomPointMutation({ id, title, description });
-    },
-    [],
-  );
-
   return {
     addCustomPoints,
     deleteCustomPoint,
-    editCustomPoint,
   };
 };
 
