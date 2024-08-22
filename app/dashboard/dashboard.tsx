@@ -4,17 +4,16 @@ import InlineLoader from '@/components/ui/InlineLoader';
 import { api } from '@/convex/_generated/api';
 import { Id } from '@/convex/_generated/dataModel';
 import { timestampToDate } from '@/convex/utils';
-import { DEFAULT_POINTS } from '@/lib/const';
 import { usePreloadedQueryWithAuth } from '@/lib/hooks';
 import { Menu, MenuButton, MenuItem, MenuItems, Transition } from '@headlessui/react';
+import { EllipsisVerticalIcon } from '@heroicons/react/20/solid';
 import { sendGAEvent } from '@next/third-parties/google';
 import { Preloaded, useMutation } from 'convex/react';
 import debounce from 'lodash/debounce';
 import { PauseIcon, PlayIcon, SquareIcon } from 'lucide-react';
 import Link from 'next/link';
-import { useCallback, useContext, useEffect, useState } from 'react';
+import { useCallback, useContext, useState } from 'react';
 import { RecordingContext } from '../RecordingContext';
-import { EllipsisVerticalIcon } from '@heroicons/react/20/solid';
 
 export default function DashboardHomePage({
   preloadedNotes,
@@ -30,20 +29,12 @@ export default function DashboardHomePage({
 
   const [searchQuery, setSearchQuery] = useState('');
   const mutateNoteRemove = useMutation(api.notes.removeNote);
-  const addCustomPoint = useMutation(api.customPoints.createCustomPoint);
 
   const { playerState, play, pause, stop, resume } = usePlayer();
 
   function classNames(...classes: string[]) {
     return classes.filter(Boolean).join(' ');
   }
-
-  useEffect(() => {
-    if (!allCustomPoints.length) {
-      addCustomPoint(DEFAULT_POINTS[0]);
-      addCustomPoint(DEFAULT_POINTS[1]);
-    }
-  }, []);
 
   const actions = [
     {

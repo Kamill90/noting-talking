@@ -108,6 +108,8 @@ export const RecordingContextProvider: React.FC<{ children: ReactNode }> = ({ ch
       mediaRecorderRef.current.stop();
       setIsRecording(false);
       setIsPaused(false);
+      mediaRecorderRef.current.stream.getTracks().forEach((track) => track.stop());
+      mediaRecorderRef.current = null;
     }
   };
 
@@ -127,6 +129,8 @@ export const RecordingContextProvider: React.FC<{ children: ReactNode }> = ({ ch
 
   const cancelRecording = () => {
     if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
+      mediaRecorderRef.current.stop();
+      mediaRecorderRef.current.stream.getTracks().forEach((track) => track.stop());
       mediaRecorderRef.current = null;
       audioChunksRef.current = [];
       setIsRecording(false);

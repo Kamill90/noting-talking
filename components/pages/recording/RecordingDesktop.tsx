@@ -3,6 +3,7 @@ import { Toast } from '@/components/ui/Toast';
 import { api } from '@/convex/_generated/api';
 import { Doc, Id } from '@/convex/_generated/dataModel';
 import { timestampToDate } from '@/convex/utils';
+import { DEFAULT_POINTS } from '@/lib/const';
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react';
 import { sendGAEvent } from '@next/third-parties/google';
 import { useMutation } from 'convex/react';
@@ -45,15 +46,22 @@ export default function RecordingDesktop({ note, customPoints, customTranscripti
   } = note;
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const mutateTranscription = useMutation(api.notes.modifyNoteByUsage);
   const createCustomTranscription = useMutation(api.customTranscriptions.createCustomTranscription);
   const loading = generatingTranscript || generatingTitle;
+  const addCustomPoint = useMutation(api.customPoints.createCustomPoint);
 
-  const { addCustomPoints, deleteCustomPoint } = useCustomPoints();
+  const { addCustomPoints } = useCustomPoints();
 
   const MAX_INLINE_CUSTOM_POINTS = 3;
   const inlineCustomPoints = customPoints.slice(0, MAX_INLINE_CUSTOM_POINTS);
   const dropdownCustomPoints = customPoints.slice(MAX_INLINE_CUSTOM_POINTS);
+
+  useEffect(() => {
+    if (!customPoints.length) {
+      addCustomPoint(DEFAULT_POINTS[0]);
+      addCustomPoint(DEFAULT_POINTS[1]);
+    }
+  }, []);
 
   const openDialog = () => {
     sendGAEvent('event', 'open_custom_point_dialog');

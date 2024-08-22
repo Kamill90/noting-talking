@@ -1,5 +1,4 @@
 import { GoogleAnalytics, GoogleTagManager } from '@next/third-parties/google';
-import { Analytics } from '@vercel/analytics/react';
 import type { Metadata } from 'next';
 import { Toaster } from 'react-hot-toast';
 import ConvexClientProvider from './ConvexClientProvider';
@@ -55,7 +54,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <RecordingContextProvider>
             <RecordingPanel />
             {children}
-            <Analytics />
             <Toaster position="bottom-left" reverseOrder={false} />
           </RecordingContextProvider>
         </ConvexClientProvider>
