@@ -3,6 +3,7 @@ import { api } from '@/convex/_generated/api';
 import { Doc, Id } from '@/convex/_generated/dataModel';
 import { timestampToDate } from '@/convex/utils';
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react';
+import { sendGAEvent } from '@next/third-parties/google';
 import { useMutation } from 'convex/react';
 import { ChevronDownIcon, ChevronLeft, TrashIcon } from 'lucide-react';
 import Link from 'next/link';
@@ -53,10 +54,12 @@ export default function RecordingDesktop({ note, customPoints, customTranscripti
   const foldedCustomPoints = customPoints.slice(4, customPoints.length);
 
   const openDialog = () => {
+    sendGAEvent('event', 'open_custom_point_dialog');
     setIsDialogOpen(true);
   };
 
   const closeDialog = () => {
+    sendGAEvent('event', 'close_custom_point_dialog');
     setIsDialogOpen(false);
   };
 
@@ -64,6 +67,7 @@ export default function RecordingDesktop({ note, customPoints, customTranscripti
     if (customPoints.find((point) => point.title === title)) {
       return console.error('duplicates are prohibited');
     }
+    sendGAEvent('event', 'create_custom_point', { title });
     addCustomPoints(title, description);
   };
 
@@ -73,6 +77,7 @@ export default function RecordingDesktop({ note, customPoints, customTranscripti
         <div className="flex flex-row justify-between">
           <button
             onClick={() => {
+              sendGAEvent('event', 'create_custom_transcription', { point_title: point.title });
               createCustomTranscription({ noteId: note._id, transcript: transcription, point });
             }}
             className="group flex items-center px-4 py-2 text-sm text-gray-700 data-[focus]:bg-gray-100 data-[focus]:text-gray-900"
@@ -81,6 +86,7 @@ export default function RecordingDesktop({ note, customPoints, customTranscripti
           </button>
           <button
             onClick={() => {
+              sendGAEvent('event', 'delete_custom_point', { point_id: point._id });
               deleteCustomPoint(point._id);
             }}
           >
@@ -174,6 +180,7 @@ export default function RecordingDesktop({ note, customPoints, customTranscripti
                       key={point._id}
                       className="mr-5 text-blue-400"
                       onClick={() => {
+                        sendGAEvent('event', 'create_custom_transcription', { point_title: point.title });
                         createCustomTranscription({
                           noteId: note._id,
                           transcript: transcription,

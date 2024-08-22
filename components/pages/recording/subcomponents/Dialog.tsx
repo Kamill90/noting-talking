@@ -2,6 +2,7 @@
 
 import { DialogBackdrop, DialogPanel, Dialog as ReactDialog } from '@headlessui/react';
 import { useRef } from 'react';
+import { sendGAEvent } from '@next/third-parties/google';
 
 interface Props {
   isOpen: boolean;
@@ -19,6 +20,7 @@ export default function Dialog({ isOpen, close, submit }: Props) {
     const enteredTitle = titleInputRef.current?.value as string;
     const enteredDescription = descriptionInputRef.current?.value as string;
 
+    sendGAEvent('event', 'submit_custom_point', { title: enteredTitle });
     submit(enteredTitle, enteredDescription);
     close();
   };
@@ -80,13 +82,17 @@ export default function Dialog({ isOpen, close, submit }: Props) {
                   <div className="flex flex-row">
                     <button
                       type="button"
-                      onClick={close}
+                      onClick={() => {
+                        sendGAEvent('event', 'cancel_custom_point_creation');
+                        close();
+                      }}
                       className="border-w-10 mr-2 flex w-full justify-center rounded-md border border-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-indigo-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                     >
                       Cancel
                     </button>
                     <button
                       type="submit"
+                      onClick={() => sendGAEvent('event', 'add_custom_point')}
                       className="ml-2 flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                     >
                       Add custom usage

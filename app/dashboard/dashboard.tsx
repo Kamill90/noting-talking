@@ -7,10 +7,12 @@ import { timestampToDate } from '@/convex/utils';
 import { DEFAULT_POINTS } from '@/lib/const';
 import { usePreloadedQueryWithAuth } from '@/lib/hooks';
 import { Menu, MenuButton, MenuItem, MenuItems, Transition } from '@headlessui/react';
+import { sendGAEvent } from '@next/third-parties/google';
 import { Preloaded, useMutation } from 'convex/react';
+import debounce from 'lodash/debounce';
 import { PauseIcon, PlayIcon, SquareIcon } from 'lucide-react';
 import Link from 'next/link';
-import { useContext, useEffect, useState } from 'react';
+import { useCallback, useContext, useEffect, useState } from 'react';
 import { RecordingContext } from '../RecordingContext';
 
 export default function DashboardHomePage({
@@ -46,6 +48,7 @@ export default function DashboardHomePage({
     {
       title: 'remove',
       onClick: (id: Id<'notes'>) => {
+        sendGAEvent('event', 'remove_note', { note_id: id });
         mutateNoteRemove({ id });
       },
     },
@@ -115,6 +118,7 @@ export default function DashboardHomePage({
                   type="button"
                   className="mr-2 w-5 cursor-pointer opacity-100 transition-all duration-1000 ease-in-out hover:opacity-75"
                   onClick={() => {
+                    sendGAEvent('event', 'play_audio', { note_id: note._id });
                     play(note.audioFileUrl);
                   }}
                 />
@@ -163,6 +167,14 @@ export default function DashboardHomePage({
         );
       });
   };
+
+  const debouncedSendGAEvent = useCallback(
+    debounce((value: string) => {
+      sendGAEvent('event', 'search', value);
+    }, 300),
+    []
+  );
+
   return (
     <>
       <div className="min-h-full">
@@ -182,7 +194,9 @@ export default function DashboardHomePage({
                   id="search"
                   value={searchQuery}
                   onChange={(e) => {
-                    setSearchQuery(e.target.value);
+                    const newValue = e.target.value;
+                    setSearchQuery(newValue);
+                    debouncedSendGAEvent(newValue);
                   }}
                   className="block h-full w-full rounded-md border-0 py-1.5 pr-14 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                 />
@@ -194,7 +208,10 @@ export default function DashboardHomePage({
                   isRecording ? 'bg-indigo-100' : 'bg-indigo-600 hover:bg-indigo-500',
                   '"flex-end focus-visible:outline-indigo-600" rounded-md px-3.5 py-2.5 text-xl font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2',
                 )}
-                onClick={startRecording}
+                onClick={() => {
+                  sendGAEvent('event', 'start_recording');
+                  startRecording();
+                }}
               >
                 Record note
               </button>
