@@ -19,9 +19,12 @@ const useCustomPoints = () => {
     deleteCustomPointMutation({ id });
   }, []);
 
-  const editCustomPoint = useCallback((id: Id<'customPoints'>, title: string, description: string) => {
-    editCustomPointMutation({ id, title, description });
-  }, []);
+  const editCustomPoint = useCallback(
+    (id: Id<'customPoints'>, title: string, description: string) => {
+      editCustomPointMutation({ id, title, description });
+    },
+    [],
+  );
 
   return {
     addCustomPoints,

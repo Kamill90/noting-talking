@@ -6,7 +6,7 @@ import { timestampToDate } from '@/convex/utils';
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react';
 import { sendGAEvent } from '@next/third-parties/google';
 import { useMutation } from 'convex/react';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, ChevronUpIcon } from 'lucide-react';
 import Link from 'next/link';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import useCustomPoints from '../hooks/useCustomPoints';
@@ -78,8 +78,9 @@ export default function RecordingDesktop({ note, customPoints, customTranscripti
       <MenuItem key={point._id}>
         {({ active }) => (
           <button
-            className={`${active ? 'bg-gray-100 text-gray-900' : 'text-gray-700'
-              } group flex w-full items-center px-4 py-2 text-sm`}
+            className={`${
+              active ? 'bg-gray-100 text-gray-900' : 'text-gray-700'
+            } group flex w-full items-center px-4 py-2 text-sm`}
             onClick={() => {
               sendGAEvent('event', 'create_custom_transcription', { point_title: point.title });
               createCustomTranscriptionWithScroll({
@@ -204,22 +205,22 @@ export default function RecordingDesktop({ note, customPoints, customTranscripti
               <Transcription note={note} target="transcription" onCopy={handleCopy} />
               {customTranscriptions.length
                 ? customTranscriptions.map((customTranscription) =>
-                  customTranscription.error ? null : customTranscription.loading ? (
-                    <div
-                      key={customTranscription._id}
-                      ref={(el) => setCustomTranscriptionRef(el, customTranscription._id)}
-                    >
-                      <InlineLoader text={`Generating ${customTranscription.title}`} />
-                    </div>
-                  ) : (
-                    <CustomTranscription
-                      key={customTranscription._id}
-                      note={customTranscription}
-                      onCopy={handleCopy}
-                      onRendered={handleCustomTranscriptionRendered}
-                    />
-                  ),
-                )
+                    customTranscription.error ? null : customTranscription.loading ? (
+                      <div
+                        key={customTranscription._id}
+                        ref={(el) => setCustomTranscriptionRef(el, customTranscription._id)}
+                      >
+                        <InlineLoader text={`Generating ${customTranscription.title}`} />
+                      </div>
+                    ) : (
+                      <CustomTranscription
+                        key={customTranscription._id}
+                        note={customTranscription}
+                        onCopy={handleCopy}
+                        onRendered={handleCustomTranscriptionRendered}
+                      />
+                    ),
+                  )
                 : null}
             </main>
           </div>
@@ -253,7 +254,7 @@ export default function RecordingDesktop({ note, customPoints, customTranscripti
                       <div>
                         <MenuButton className="inline-flex items-center rounded-md px-3 py-1 text-sm text-sky-600 hover:bg-sky-50">
                           More
-                          <ChevronUpIcon className="ml-2 -mr-1 h-5 w-5" aria-hidden="true" />
+                          <ChevronUpIcon className="-mr-1 ml-2 h-5 w-5" aria-hidden="true" />
                         </MenuButton>
                       </div>
                       <MenuItems className="absolute bottom-full left-0 z-10 mb-2 w-56 origin-bottom-left rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">

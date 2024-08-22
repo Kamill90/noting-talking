@@ -13,7 +13,14 @@ interface Props {
   initialDescription?: string;
 }
 
-export default function Dialog({ isOpen, close, submit, title, initialTitle = '', initialDescription = '' }: Props) {
+export default function Dialog({
+  isOpen,
+  close,
+  submit,
+  title,
+  initialTitle = '',
+  initialDescription = '',
+}: Props) {
   const titleInputRef = useRef<HTMLInputElement>(null);
   const descriptionInputRef = useRef<HTMLInputElement>(null);
 
@@ -35,13 +42,8 @@ export default function Dialog({ isOpen, close, submit, title, initialTitle = ''
 
   return (
     <ReactDialog open={isOpen} onClose={close}>
-      <DialogBackdrop
-        className="fixed inset-0 bg-black/30"
-        aria-hidden="true"
-      />
-      <DialogPanel
-        className="fixed inset-0 flex items-center justify-center p-4"
-      >
+      <DialogBackdrop className="fixed inset-0 bg-black/30" aria-hidden="true" />
+      <DialogPanel className="fixed inset-0 flex items-center justify-center p-4">
         <div className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
           <h2 className="text-center text-2xl font-bold leading-9 tracking-tight text-zinc-800">
             {title} {/* Use the title prop here */}
@@ -64,7 +66,10 @@ export default function Dialog({ isOpen, close, submit, title, initialTitle = ''
             </div>
 
             <div>
-              <label htmlFor="description" className="block text-sm font-medium leading-6 text-zinc-800">
+              <label
+                htmlFor="description"
+                className="block text-sm font-medium leading-6 text-zinc-800"
+              >
                 Describe what type of content would you like to get
               </label>
               <div className="mt-2">
