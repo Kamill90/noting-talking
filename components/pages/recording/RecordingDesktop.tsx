@@ -180,7 +180,9 @@ export default function RecordingDesktop({ note, customPoints, customTranscripti
                       key={point._id}
                       className="mr-5 text-blue-400"
                       onClick={() => {
-                        sendGAEvent('event', 'create_custom_transcription', { point_title: point.title });
+                        sendGAEvent('event', 'create_custom_transcription', {
+                          point_title: point.title,
+                        });
                         createCustomTranscription({
                           noteId: note._id,
                           transcript: transcription,

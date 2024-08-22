@@ -172,7 +172,7 @@ export default function DashboardHomePage({
     debounce((value: string) => {
       sendGAEvent('event', 'search', value);
     }, 300),
-    []
+    [],
   );
 
   return (
