@@ -1,109 +1,106 @@
 'use client';
 
 import { DialogBackdrop, DialogPanel, Dialog as ReactDialog } from '@headlessui/react';
-import { useRef } from 'react';
 import { sendGAEvent } from '@next/third-parties/google';
+import { useEffect, useRef } from 'react';
 
 interface Props {
   isOpen: boolean;
   close: () => void;
   submit: (title: string, description: string) => void;
+  title: string; // Added title prop
+  initialTitle?: string;
+  initialDescription?: string;
 }
 
-export default function Dialog({ isOpen, close, submit }: Props) {
+export default function Dialog({
+  isOpen,
+  close,
+  submit,
+  title,
+  initialTitle = '',
+  initialDescription = '',
+}: Props) {
   const titleInputRef = useRef<HTMLInputElement>(null);
   const descriptionInputRef = useRef<HTMLInputElement>(null);
 
-  const handleSubmit = (event: React.FormEvent) => {
-    event.preventDefault();
+  useEffect(() => {
+    if (isOpen && titleInputRef.current && descriptionInputRef.current) {
+      titleInputRef.current.value = initialTitle;
+      descriptionInputRef.current.value = initialDescription;
+    }
+  }, [isOpen, initialTitle, initialDescription]);
 
-    const enteredTitle = titleInputRef.current?.value as string;
-    const enteredDescription = descriptionInputRef.current?.value as string;
-
-    sendGAEvent('event', 'submit_custom_point', { title: enteredTitle });
-    submit(enteredTitle, enteredDescription);
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (titleInputRef.current && descriptionInputRef.current) {
+      sendGAEvent('event', 'submit_custom_point', { title: titleInputRef.current.value });
+      submit(titleInputRef.current.value, descriptionInputRef.current.value);
+    }
     close();
   };
 
   return (
-    <ReactDialog open={isOpen} onClose={close} className="relative z-10">
-      <DialogBackdrop
-        transition
-        className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in"
-      />
+    <ReactDialog open={isOpen} onClose={close}>
+      <DialogBackdrop className="fixed inset-0 bg-black/30" aria-hidden="true" />
+      <DialogPanel className="fixed inset-0 flex items-center justify-center p-4">
+        <div className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
+          <h2 className="text-center text-2xl font-bold leading-9 tracking-tight text-zinc-800">
+            {title} {/* Use the title prop here */}
+          </h2>
 
-      <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
-        <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
-          <DialogPanel
-            transition
-            className="relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all data-[closed]:translate-y-4 data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in sm:my-8 sm:w-full sm:max-w-sm sm:p-6 data-[closed]:sm:translate-y-0 data-[closed]:sm:scale-95"
-          >
-            <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
-              <div className="sm:mx-auto sm:w-full sm:max-w-sm">
-                <h2 className="text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
-                  Create custom content
-                </h2>
-              </div>
-
-              <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-                <form action="#" method="POST" className="space-y-6" onSubmit={handleSubmit}>
-                  <div>
-                    <label className="block text-sm font-medium leading-6 text-gray-900">
-                      Custom content tile
-                    </label>
-                    <div className="mt-2">
-                      <input
-                        ref={titleInputRef}
-                        id="title"
-                        name="title"
-                        required
-                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <div className="flex items-center justify-between">
-                      <label className="block text-sm font-medium leading-6 text-gray-900">
-                        Description
-                      </label>
-                    </div>
-                    <div className="mt-2">
-                      <input
-                        ref={descriptionInputRef}
-                        id="description"
-                        name="description"
-                        required
-                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="flex flex-row">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        sendGAEvent('event', 'cancel_custom_point_creation');
-                        close();
-                      }}
-                      className="border-w-10 mr-2 flex w-full justify-center rounded-md border border-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-indigo-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      type="submit"
-                      onClick={() => sendGAEvent('event', 'add_custom_point')}
-                      className="ml-2 flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                    >
-                      Add custom usage
-                    </button>
-                  </div>
-                </form>
+          <form onSubmit={handleSubmit} className="mt-8 space-y-6">
+            <div>
+              <label htmlFor="title" className="block text-sm font-medium leading-6 text-zinc-800">
+                Name
+              </label>
+              <div className="mt-2">
+                <input
+                  ref={titleInputRef}
+                  id="title"
+                  name="title"
+                  required
+                  className="block w-full rounded-md border-0 py-1.5 text-zinc-800 shadow-sm ring-1 ring-inset ring-zinc-400 placeholder:text-zinc-400 focus:ring-2 focus:ring-inset focus:ring-zinc-800 sm:text-sm sm:leading-6"
+                />
               </div>
             </div>
-          </DialogPanel>
+
+            <div>
+              <label
+                htmlFor="description"
+                className="block text-sm font-medium leading-6 text-zinc-800"
+              >
+                Describe what type of content would you like to get
+              </label>
+              <div className="mt-2">
+                <input
+                  ref={descriptionInputRef}
+                  id="description"
+                  name="What type of content would you like to create?"
+                  required
+                  className="block w-full rounded-md border-0 py-1.5 text-zinc-800 shadow-sm ring-1 ring-inset ring-zinc-400 placeholder:text-zinc-400 focus:ring-2 focus:ring-inset focus:ring-zinc-800 sm:text-sm sm:leading-6"
+                />
+              </div>
+            </div>
+
+            <div className="flex flex-row gap-4">
+              <button
+                type="button"
+                onClick={close}
+                className="flex w-full justify-center rounded-md border border-zinc-800 px-3 py-1.5 text-sm font-semibold leading-6 text-zinc-800 shadow-sm hover:bg-zinc-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-600"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className="flex w-full justify-center rounded-md bg-zinc-800 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-zinc-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-600"
+              >
+                Add custom content
+              </button>
+            </div>
+          </form>
         </div>
-      </div>
+      </DialogPanel>
     </ReactDialog>
   );
 }
