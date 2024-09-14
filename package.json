@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "@clerk/nextjs": "^4.29.7",
-    "@headlessui/react": "^2.1.2",
+    "@headlessui/react": "^2.1.8",
     "@heroicons/react": "^2.1.5",
     "@instructor-ai/instructor": "^0.0.5",
     "@next/third-parties": "^14.2.5",
@@ -39,12 +39,12 @@
   },
   "devDependencies": {
     "@types/file-saver": "^2.0.7",
+    "@types/lodash": "^4.14.195",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "autoprefixer": "^10.0.1",
     "eslint": "^8",
-    "@types/lodash": "^4.14.195",
     "eslint-config-next": "14.0.1",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-prettier": "^5.1.3",

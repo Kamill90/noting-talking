@@ -7,6 +7,11 @@ import { RecordingContextProvider } from './RecordingContext';
 import { RecordingPanel } from './RecordingPanel';
 import './globals.css';
 
+import { Montserrat, Open_Sans } from 'next/font/google';
+
+const montserrat = Montserrat({ subsets: ['latin'], variable: '--font-montserrat' });
+const openSans = Open_Sans({ subsets: ['latin'], variable: '--font-open-sans' });
+
 let title = 'Create content with your voice';
 let description =
   'Convert your voice notes into tweets, blog posts, summaries, loose notes and clear action items using AI.';
@@ -40,7 +45,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className="h-full">
+    <html lang="en" className={`${montserrat.variable} ${openSans.variable}`}>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
