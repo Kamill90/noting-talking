@@ -1,28 +1,31 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { Dialog } from '@headlessui/react'
-import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline'
-import Image from 'next/image'
-import Link from 'next/link'
-import { useAuth } from '@clerk/nextjs'
+import { useAuth } from '@clerk/nextjs';
+import { Dialog } from '@headlessui/react';
+import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
+import Image from 'next/image';
+import Link from 'next/link';
+import { useState } from 'react';
 
-const navigation = [
+const navigation: any[] = [
   // { name: 'Features', href: '#' },
-]
+];
 
 export default function Navbar() {
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { isSignedIn } = useAuth();
 
   return (
     <header className="bg-white">
-      <nav aria-label="Global" className="mx-auto flex max-w-7xl items-center justify-between p-6 lg:px-8">
+      <nav
+        aria-label="Global"
+        className="mx-auto flex max-w-7xl items-center justify-between p-6 lg:px-8"
+      >
         <div className="flex lg:flex-1">
           <Link href="/" className="-m-1.5 p-1.5">
             <span className="sr-only">Your Company</span>
             <Image
-              src="/logo.svg"  // Updated path
+              src="/logo.svg" // Updated path
               alt="Company Logo"
               className="h-6 w-auto"
               width={16}
@@ -42,17 +45,25 @@ export default function Navbar() {
         </div>
         <div className="hidden lg:flex lg:gap-x-12">
           {navigation.map((item) => (
-            <Link key={item.name} href={item.href} className="text-sm font-semibold leading-6 text-gray-900 font-montserrat">
+            <Link
+              key={item.name}
+              href={item.href}
+              className="font-montserrat text-sm font-semibold leading-6 text-gray-900"
+            >
               {item.name}
             </Link>
           ))}
         </div>
         <div className="hidden lg:flex lg:flex-1 lg:justify-end">
           <Link
-            href={isSignedIn ? "/dashboard" : "https://sharing-maggot-29.accounts.dev/sign-in?redirect_url=http%3A%2F%2Flocalhost%3A3000%2Fdashboard"}
-            className="text-sm font-semibold leading-6 text-gray-900 font-montserrat"
+            href={
+              isSignedIn
+                ? '/dashboard'
+                : 'https://sharing-maggot-29.accounts.dev/sign-in?redirect_url=http%3A%2F%2Flocalhost%3A3000%2Fdashboard'
+            }
+            className="font-montserrat text-sm font-semibold leading-6 text-gray-900"
           >
-            {isSignedIn ? "Dashboard" : "Log in"} <span aria-hidden="true">&rarr;</span>
+            {isSignedIn ? 'Dashboard' : 'Log in'} <span aria-hidden="true">&rarr;</span>
           </Link>
         </div>
       </nav>
@@ -63,7 +74,7 @@ export default function Navbar() {
             <Link href="/" className="-m-1.5 p-1.5">
               <span className="sr-only">Your Company</span>
               <Image
-                src="/logo.svg"  // Updated path
+                src="/logo.svg" // Updated path
                 alt="Company Logo"
                 className="h-8 w-auto"
                 width={32}
@@ -86,7 +97,7 @@ export default function Navbar() {
                   <Link
                     key={item.name}
                     href={item.href}
-                    className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50 font-montserrat"
+                    className="-mx-3 block rounded-lg px-3 py-2 font-montserrat text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
                   >
                     {item.name}
                   </Link>
@@ -94,10 +105,14 @@ export default function Navbar() {
               </div>
               <div className="py-6">
                 <Link
-                  href={isSignedIn ? "/dashboard" : "https://sharing-maggot-29.accounts.dev/sign-in?redirect_url=http%3A%2F%2Flocalhost%3A3000%2Fdashboard"}
-                  className="-mx-3 block rounded-lg px-3 py-2.5 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50 font-montserrat"
+                  href={
+                    isSignedIn
+                      ? '/dashboard'
+                      : 'https://sharing-maggot-29.accounts.dev/sign-in?redirect_url=http%3A%2F%2Flocalhost%3A3000%2Fdashboard'
+                  }
+                  className="-mx-3 block rounded-lg px-3 py-2.5 font-montserrat text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
                 >
-                  {isSignedIn ? "Dashboard" : "Log in"}
+                  {isSignedIn ? 'Dashboard' : 'Log in'}
                 </Link>
               </div>
             </div>
@@ -105,5 +120,5 @@ export default function Navbar() {
         </Dialog.Panel>
       </Dialog>
     </header>
-  )
+  );
 }
