@@ -5,15 +5,15 @@ import { Dialog } from '@headlessui/react'
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline'
 import Image from 'next/image'
 import Link from 'next/link'
+import { useAuth } from '@clerk/nextjs'
 
 const navigation = [
-  { name: 'Product', href: '#' },
-  { name: 'Features', href: '#' },
-  { name: 'Marketplace', href: '#' },
+  // { name: 'Features', href: '#' },
 ]
 
 export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const { isSignedIn } = useAuth();
 
   return (
     <header className="bg-white">
@@ -48,9 +48,12 @@ export default function Navbar() {
           ))}
         </div>
         <div className="hidden lg:flex lg:flex-1 lg:justify-end">
-          <a href="https://sharing-maggot-29.accounts.dev/sign-in?redirect_url=http%3A%2F%2Flocalhost%3A3000%2Fdashboard" className="text-sm font-semibold leading-6 text-gray-900 font-montserrat">
-            Log in <span aria-hidden="true">&rarr;</span>
-          </a>
+          <Link
+            href={isSignedIn ? "/dashboard" : "https://sharing-maggot-29.accounts.dev/sign-in?redirect_url=http%3A%2F%2Flocalhost%3A3000%2Fdashboard"}
+            className="text-sm font-semibold leading-6 text-gray-900 font-montserrat"
+          >
+            {isSignedIn ? "Dashboard" : "Log in"} <span aria-hidden="true">&rarr;</span>
+          </Link>
         </div>
       </nav>
       <Dialog as="div" className="lg:hidden" open={mobileMenuOpen} onClose={setMobileMenuOpen}>
@@ -90,12 +93,12 @@ export default function Navbar() {
                 ))}
               </div>
               <div className="py-6">
-                <a
-                  href="https://sharing-maggot-29.accounts.dev/sign-in?redirect_url=http%3A%2F%2Flocalhost%3A3000%2Fdashboard"
+                <Link
+                  href={isSignedIn ? "/dashboard" : "https://sharing-maggot-29.accounts.dev/sign-in?redirect_url=http%3A%2F%2Flocalhost%3A3000%2Fdashboard"}
                   className="-mx-3 block rounded-lg px-3 py-2.5 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50 font-montserrat"
                 >
-                  Log in
-                </a>
+                  {isSignedIn ? "Dashboard" : "Log in"}
+                </Link>
               </div>
             </div>
           </div>

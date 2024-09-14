@@ -3,51 +3,50 @@ import { ArrowPathIcon, CloudArrowUpIcon, FingerPrintIcon, LockClosedIcon } from
 
 const features = [
     {
-        name: 'Push to deploy',
+        name: 'Record voice messages',
         description:
-            'Morbi viverra dui mi arcu sed. Tellus semper adipiscing suspendisse semper morbi. Odio urna massa nunc massa.',
+            'Keep a daily voice diary to look back on later.',
         icon: CloudArrowUpIcon,
     },
     {
-        name: 'SSL certificates',
+        name: 'Transcribe voice messages',
         description:
-            'Sit quis amet rutrum tellus ullamcorper ultricies libero dolor eget. Sem sodales gravida quam turpis enim lacus amet.',
+            'Use AI to transcribe your voice messages into text.',
         icon: LockClosedIcon,
     },
     {
-        name: 'Simple queues',
+        name: 'Generate content',
         description:
-            'Quisque est vel vulputate cursus. Risus proin diam nunc commodo. Lobortis auctor congue commodo diam neque.',
+            'Generaty any custom content you want from your voice messages.',
         icon: ArrowPathIcon,
     },
     {
-        name: 'Advanced security',
+        name: 'Share content',
         description:
-            'Arcu egestas dolor vel iaculis in ipsum mauris. Tincidunt mattis aliquet hac quis. Id hac maecenas ac donec pharetra eget.',
+            'Share your content with your audience in a way that is easy and fast.',
         icon: FingerPrintIcon,
     },
 ]
 
 const Features: React.FC = () => {
     return (
-        <div className="bg-white py-24 sm:py-32">
+        <div id="features" className="bg-white py-24 sm:py-32">
             <div className="mx-auto max-w-7xl px-6 lg:px-8">
                 <div className="mx-auto max-w-2xl lg:text-center">
-                    <h2 className="text-base font-semibold leading-7 text-indigo-600 font-montserrat">Deploy faster</h2>
-                    <p className="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl font-montserrat">
-                        Everything you need to deploy your app
+                    <h2 className="text-base font-semibold leading-7 text-zinc-600 font-montserrat">Fast and easy</h2>
+                    <p className="mt-2 text-3xl font-bold tracking-tight text-zinc-900 sm:text-4xl font-montserrat">
+                        Create content with ease
                     </p>
-                    <p className="mt-6 text-lg leading-8 text-gray-600 font-open-sans">
-                        Quis tellus eget adipiscing convallis sit sit eget aliquet quis. Suspendisse eget egestas a elementum
-                        pulvinar et feugiat blandit at. In mi viverra elit nunc.
+                    <p className="mt-6 text-lg leading-8 text-zinc-600 font-open-sans">
+                        Focus on speaking and let the AI do the rest.
                     </p>
                 </div>
                 <div className="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-4xl">
                     <dl className="grid max-w-xl grid-cols-1 gap-x-8 gap-y-10 lg:max-w-none lg:grid-cols-2 lg:gap-y-16">
                         {features.map((feature) => (
                             <div key={feature.name} className="relative pl-16">
-                                <dt className="text-base font-semibold leading-7 text-gray-900 font-montserrat">
-                                    <div className="absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-600">
+                                <dt className="text-base font-semibold leading-7 text-zinc-900 font-montserrat">
+                                    <div className="absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-lg bg-zinc-900">
                                         <feature.icon aria-hidden="true" className="h-6 w-6 text-white" />
                                     </div>
                                     {feature.name}
