@@ -1,44 +1,18 @@
+'use client'
+
 import { GoogleAnalytics, GoogleTagManager } from '@next/third-parties/google';
-import type { Metadata } from 'next';
 import { Toaster } from 'react-hot-toast';
 import ConvexClientProvider from './ConvexClientProvider';
 import { RecordingContextProvider } from './RecordingContext';
-
-import { RecordingPanel } from './RecordingPanel';
+import { usePathname } from 'next/navigation';
+import Layout from '../components/Layout';
+import Banner from '../components/pages/home/Banner';
 import './globals.css';
 
-let title = 'Create content with your voice';
-let description =
-  'Convert your voice notes into tweets, blog posts, summaries, loose notes and clear action items using AI.';
-let url = 'https://usenotesgpt.com';
-let ogimage = 'https://usenotesgpt.com/images/og-image.png';
-let sitename = 'usenotesgpt.com';
-
-export const metadata: Metadata = {
-  metadataBase: new URL(url),
-  title,
-  description,
-  icons: {
-    icon: '/favicon.ico',
-  },
-  openGraph: {
-    images: [ogimage],
-    title,
-    description,
-    url: url,
-    siteName: sitename,
-    locale: 'en_US',
-    type: 'website',
-  },
-  twitter: {
-    card: 'summary_large_image',
-    images: [ogimage],
-    title,
-    description,
-  },
-};
-
 export default function RootLayout({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname();
+  const isLandingPage = pathname === '/';
+
   return (
     <html lang="en" className="h-full">
       <head>
@@ -52,14 +26,15 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="h-full" suppressHydrationWarning={true}>
         <ConvexClientProvider>
           <RecordingContextProvider>
-            <RecordingPanel />
-            {children}
+            <Layout isLandingPage={isLandingPage}>
+              {isLandingPage ? <Banner /> : children}
+            </Layout>
             <Toaster position="bottom-left" reverseOrder={false} />
           </RecordingContextProvider>
         </ConvexClientProvider>
+        <GoogleTagManager gtmId="G-T9MVK85ZBJ" />
+        <GoogleAnalytics gaId="G-T9MVK85ZBJ" />
       </body>
-      <GoogleTagManager gtmId="G-T9MVK85ZBJ" />
-      <GoogleAnalytics gaId="G-T9MVK85ZBJ" />
     </html>
   );
 }
