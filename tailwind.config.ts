@@ -9,8 +9,8 @@ const config: Config = {
   theme: {
     extend: {
       fontFamily: {
-        montserrat: ['Montserrat', 'sans-serif'],
-        opensans: ['Open Sans', 'sans-serif'],
+        montserrat: ['var(--font-montserrat)'],
+        'open-sans': ['var(--font-open-sans)'],
       },
       colors: {
         primary: '#491E6B',
