@@ -1,11 +1,11 @@
 'use client';
 
 import React from 'react';
-import Navbar from './Navbar';
-import HeroSection from './HeroSection';
-import Features from './Features';
 import CTA from './CTA';
+import Features from './Features';
 import Footer from './Footer';
+import HeroSection from './HeroSection';
+import Navbar from './Navbar';
 
 const LandingPage: React.FC = () => {
   return (

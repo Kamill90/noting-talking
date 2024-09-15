@@ -38,11 +38,7 @@ const CTA: React.FC = () => {
             </p>
             <div className="mt-10 flex items-center justify-center gap-x-6 lg:justify-start">
               <Link
-                href={
-                  isSignedIn
-                    ? '/dashboard'
-                    : 'https://sharing-maggot-29.accounts.dev/sign-up?redirect_url=http%3A%2F%2Flocalhost%3A3000%2Fdashboard'
-                }
+                href="/dashboard"
                 className="rounded-full bg-white px-3.5 py-2.5 text-sm font-semibold text-zinc-900 shadow-sm hover:bg-gray-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
               >
                 {isSignedIn ? 'Go to Dashboard' : 'Get started'}

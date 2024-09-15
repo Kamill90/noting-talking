@@ -28,11 +28,7 @@ const HeroSection: React.FC = () => {
               </p>
               <div className="mt-10 flex items-center justify-center gap-x-6">
                 <Link
-                  href={
-                    isSignedIn
-                      ? '/dashboard'
-                      : 'https://sharing-maggot-29.accounts.dev/sign-up?redirect_url=http%3A%2F%2Flocalhost%3A3000%2Fdashboard%3F__dev_session%3Ddvb_2iK0QbZ37c9l2hHvUlRb4zvRYR5%26__clerk_db_jwt%3Ddvb_2iK0QbZ37c9l2hHvUlRb4zvRYR5%23__clerk_db_jwt%5Bdvb_2iK0QbZ37c9l2hHvUlRb4zvRYR5%5D'
-                  }
+                  href="/dashboard"
                   className="rounded-full bg-zinc-800 px-3.5 py-2.5 font-montserrat text-sm font-semibold text-white shadow-sm hover:bg-zinc-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                 >
                   {isSignedIn ? 'Go to Dashboard' : 'Get started'}

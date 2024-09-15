@@ -56,11 +56,7 @@ export default function Navbar() {
         </div>
         <div className="hidden lg:flex lg:flex-1 lg:justify-end">
           <Link
-            href={
-              isSignedIn
-                ? '/dashboard'
-                : 'https://sharing-maggot-29.accounts.dev/sign-in?redirect_url=http%3A%2F%2Flocalhost%3A3000%2Fdashboard'
-            }
+            href="/dashboard"
             className="font-montserrat text-sm font-semibold leading-6 text-gray-900"
           >
             {isSignedIn ? 'Dashboard' : 'Log in'} <span aria-hidden="true">&rarr;</span>
@@ -105,11 +101,7 @@ export default function Navbar() {
               </div>
               <div className="py-6">
                 <Link
-                  href={
-                    isSignedIn
-                      ? '/dashboard'
-                      : 'https://sharing-maggot-29.accounts.dev/sign-in?redirect_url=http%3A%2F%2Flocalhost%3A3000%2Fdashboard'
-                  }
+                  href="/dashboard"
                   className="-mx-3 block rounded-lg px-3 py-2.5 font-montserrat text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
                 >
                   {isSignedIn ? 'Dashboard' : 'Log in'}
