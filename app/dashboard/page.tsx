@@ -7,7 +7,8 @@ const ServerDashboardHomePage = async () => {
   const token = await getAuthToken();
   const preloadedNotes = await preloadQuery(api.notes.getNotes, {}, { token });
   const preloadedCustomPoints = await preloadQuery(api.customPoints.getCustomPoints, {}, { token });
-
+  console.log('DASHBOARD', { token, preloadedNotes });
+  return <div>Trololololol</div>;
   return (
     <DashboardHomePage
       preloadedNotes={preloadedNotes}
