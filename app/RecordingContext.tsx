@@ -129,6 +129,8 @@ export const RecordingContextProvider: React.FC<{ children: ReactNode }> = ({ ch
 
   const cancelRecording = () => {
     if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
+
+      mediaRecorderRef.current.onstop = ()=>{} 
       mediaRecorderRef.current.stop();
       mediaRecorderRef.current.stream.getTracks().forEach((track) => track.stop());
       mediaRecorderRef.current = null;
