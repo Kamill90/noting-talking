@@ -1,4 +1,4 @@
-'use client'
+'use client';
 
 import React from 'react';
 import Navbar from './Navbar';
@@ -8,15 +8,15 @@ import CTA from './CTA';
 import Footer from './Footer';
 
 const LandingPage: React.FC = () => {
-    return (
-        <div>
-            <Navbar />
-            <HeroSection />
-            <Features />
-            <CTA />
-            <Footer />
-        </div>
-    );
+  return (
+    <div>
+      <Navbar />
+      <HeroSection />
+      <Features />
+      <CTA />
+      <Footer />
+    </div>
+  );
 };
 
 export default LandingPage;
