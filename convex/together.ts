@@ -5,9 +5,9 @@ import { z } from 'zod';
 import { internal } from './_generated/api';
 import { internalAction, internalMutation, internalQuery } from './_generated/server';
 import { GeneratingValue } from './notes';
-import { actionWithUser } from './utils';
 
 const togetherApiKey = process.env.TOGETHER_API_KEY ?? 'undefined';
+const openAIApiKey = process.env.OPEN_AI_API_KEY ?? 'undefined';
 
 // Together client for LLM extraction
 const togetherai = new OpenAI({
@@ -15,9 +15,13 @@ const togetherai = new OpenAI({
   baseURL: 'https://api.together.xyz/v1',
 });
 
+const openAI = new OpenAI({
+  apiKey: openAIApiKey,
+});
+
 // Instructor for returning structured JSON
 export const client = Instructor({
-  client: togetherai,
+  client: openAI,
   mode: 'JSON_SCHEMA',
 });
 
@@ -41,6 +45,7 @@ export const chat = internalAction({
 
     try {
       const extract = await client.chat.completions.create({
+        model: "gpt-4o",
         messages: [
           {
             role: 'system',
@@ -49,14 +54,19 @@ export const chat = internalAction({
           },
           { role: 'user', content: transcript },
         ],
-        model: 'mistralai/Mixtral-8x7B-Instruct-v0.1',
-        response_model: { schema: NoteSchema, name: 'SummarizeNotes' },
-        max_tokens: 1000,
+        response_format: {
+          "type": "text"
+        },
         temperature: 0.6,
-        max_retries: 3,
+        max_tokens: 1000,
+        top_p: 1,
+        frequency_penalty: 0,
+        presence_penalty: 0
       });
-      const { title, summary } = extract;
 
+      const response = extract.choices.find(choice => choice.message.role === 'assistant')
+      const modifiedTranscript = response?.message.content || '';
+      const {summary, title} = JSON.parse(modifiedTranscript) 
       await ctx.runMutation(internal.together.saveSummary, {
         id: args.id,
         summary,
@@ -177,30 +187,30 @@ export type SearchResult = {
   score: number;
 };
 
-export const similarNotes = actionWithUser({
-  args: {
-    searchQuery: v.string(),
-  },
-  handler: async (ctx, args): Promise<SearchResult[]> => {
-    const getEmbedding = await togetherai.embeddings.create({
-      input: [args.searchQuery.replace('/n', ' ')],
-      model: 'togethercomputer/m2-bert-80M-32k-retrieval',
-    });
-    const embedding = getEmbedding.data[0].embedding;
+// export const similarNotes = actionWithUser({
+//   args: {
+//     searchQuery: v.string(),
+//   },
+//   handler: async (ctx, args): Promise<SearchResult[]> => {
+//     const getEmbedding = await togetherai.embeddings.create({
+//       input: [args.searchQuery.replace('/n', ' ')],
+//       model: 'togethercomputer/m2-bert-80M-32k-retrieval',
+//     });
+//     const embedding = getEmbedding.data[0].embedding;
 
-    // 2. Then search for similar notes
-    const results = await ctx.vectorSearch('notes', 'by_embedding', {
-      vector: embedding,
-      limit: 16,
-      filter: (q) => q.eq('userId', ctx.userId), // Only search my notes.
-    });
+//     // 2. Then search for similar notes
+//     const results = await ctx.vectorSearch('notes', 'by_embedding', {
+//       vector: embedding,
+//       limit: 16,
+//       filter: (q) => q.eq('userId', ctx.userId), // Only search my notes.
+//     });
 
-    return results.map((r) => ({
-      id: r._id,
-      score: r._score,
-    }));
-  },
-});
+//     return results.map((r) => ({
+//       id: r._id,
+//       score: r._score,
+//     }));
+//   },
+// });
 
 export const embed = internalAction({
   args: {

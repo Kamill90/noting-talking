@@ -1,7 +1,7 @@
 import { v } from 'convex/values';
 import { internal } from './_generated/api';
 import { internalAction, internalMutation } from './_generated/server';
-import { TransformationSchema, client } from './together';
+import { client } from './together';
 import { mutationWithUser, queryWithUser } from './utils';
 
 export const getCustomTranscriptions = queryWithUser({
@@ -94,21 +94,30 @@ export const transformToCustomTranscript = internalAction({
 
     try {
       const extract = await client.chat.completions.create({
+        model: "gpt-4o",
         messages: [
           {
             role: 'system',
-            content: `The following is a transcript of a voice message. Transform given transcript to be useful as ${point.description}, taking under consideration limitation related with it. Answer in JSON in this format: {modifiedTranscript: string}`,
+            content: `The following is a transcript of a voice message. Transform given transcript to be useful as ${point.description}, taking under consideration limitation related with it`,
           },
           { role: 'user', content: transcript },
         ],
-        model: 'mistralai/Mixtral-8x7B-Instruct-v0.1',
-        response_model: { schema: TransformationSchema, name: 'TransformedNote' },
-        max_tokens: 1000,
+        response_format: {
+          "type": "text"
+        },
         temperature: 0.6,
-        max_retries: 3,
+        max_tokens: 1000,
+        top_p: 1,
+        frequency_penalty: 0,
+        presence_penalty: 0
       });
-      const { modifiedTranscript } = extract;
 
+      const response = extract.choices.find(choice => choice.message.role === 'assistant')
+      const modifiedTranscript = response?.message.content;
+
+      if(!modifiedTranscript) { 
+        throw new Error("cannot extract message response")
+      }
       await ctx.runMutation(internal.customTranscriptions.updateCustomTranscriptions, {
         id: customTranscriptionId,
         newValue: modifiedTranscript,
