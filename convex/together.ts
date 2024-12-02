@@ -44,6 +44,7 @@ export const chat = internalAction({
     const { transcript } = args;
 
     try {
+      console.log('generate summary', transcript)
       const extract = await client.chat.completions.create({
         model: "gpt-4o",
         messages: [
