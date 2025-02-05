@@ -12,6 +12,7 @@ import { Preloaded, useMutation } from 'convex/react';
 import debounce from 'lodash/debounce';
 import { PauseIcon, PlayIcon, SquareIcon } from 'lucide-react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useCallback, useContext, useState } from 'react';
 import { RecordingContext } from '../RecordingContext';
 
@@ -178,37 +179,67 @@ export default function DashboardHomePage({
           <main>
             <div className="mx-auto flex w-full max-w-7xl flex-row justify-between px-4 sm:px-6">
               <div className="relative flex h-12 items-center self-center">
-                <input
-                  placeholder="Search for a voice note"
-                  type="text"
-                  name="search"
-                  id="search"
-                  value={searchQuery}
-                  onChange={(e) => {
-                    const newValue = e.target.value;
-                    setSearchQuery(newValue);
-                    debouncedSendGAEvent(newValue);
-                  }}
-                  className="block h-full w-full rounded-full border-0 py-1.5 pr-14 font-montserrat font-medium text-gray-900 shadow-sm ring-1 ring-inset ring-zinc-400 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-zinc-800 sm:text-sm sm:leading-6"
-                />
-              </div>
-              <button
-                disabled={isRecording}
-                type="button"
-                className={classNames(
-                  isRecording ? 'bg-zinc-300' : 'bg-zinc-800 hover:bg-zinc-700',
-                  'text-md rounded-full px-3.5 py-2.5 font-montserrat font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-600',
+                {allNotes.length > 0 && (
+                  <input
+                    placeholder="Search for a voice note"
+                    type="text"
+                    name="search"
+                    id="search"
+                    value={searchQuery}
+                    onChange={(e) => {
+                      const newValue = e.target.value;
+                      setSearchQuery(newValue);
+                      debouncedSendGAEvent(newValue);
+                    }}
+                    className="block h-full w-full rounded-full border-0 py-1.5 pr-14 font-montserrat font-medium text-gray-900 shadow-sm ring-1 ring-inset ring-zinc-400 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-zinc-800 sm:text-sm sm:leading-6"
+                  />
                 )}
-                onClick={() => {
-                  sendGAEvent('event', 'start_recording');
-                  startRecording();
-                }}
-              >
-                Record note
-              </button>
+              </div>
             </div>
             <div className="mx-auto my-8 max-w-7xl sm:px-6">
-              <ul role="list">{allNotes.length ? renderList() : <h2>no recordings</h2>}</ul>
+              {allNotes.length ? (
+                <ul role="list">{renderList()}</ul>
+              ) : (
+                <div className="flex flex-col items-center justify-center space-y-4 py-12">
+                  <div className="relative h-64 w-64">
+                    <Image
+                      src="/images/empty-state.svg"
+                      alt="Empty state illustration"
+                      layout="fill"
+                      objectFit="contain"
+                      priority
+                    />
+                  </div>
+                  <h2 className="font-montserrat text-3xl font-semibold text-zinc-800">
+                    Record your first note
+                  </h2>
+                  <p className="max-w-md pb-2 text-center text-zinc-600">
+                    Create content based on voice messages or record meetings and get summaries.
+                  </p>
+                  <div className="flex space-x-4">
+                    <button
+                      type="button"
+                      className="text-md rounded-lg px-4 py-2.5 font-montserrat font-semibold text-zinc-800 shadow-sm ring-1 ring-inset ring-zinc-300 hover:bg-zinc-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-600"
+                    >
+                      Record meeting
+                    </button>
+                    <button
+                      disabled={isRecording}
+                      type="button"
+                      className={classNames(
+                        isRecording ? 'bg-zinc-300' : 'bg-zinc-800 hover:bg-zinc-700',
+                        'text-md rounded-lg px-6 py-2.5 font-montserrat font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-600',
+                      )}
+                      onClick={() => {
+                        sendGAEvent('event', 'start_recording');
+                        startRecording();
+                      }}
+                    >
+                      Record note
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           </main>
         </div>
