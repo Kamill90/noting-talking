@@ -1,6 +1,6 @@
-<a href="https://usenotesgpt.com/">
-  <img alt="NotesGPT – AI-powered voice note taking in seconds." src="/public/images/og-image.png">
-  <h1 align="center">notesGPT</h1>
+<a href="https://notytalkie.com/">
+  <img alt="Noty Talkie – AI-powered voice note taking and content generation." src="/public/images/app.jpg">
+  <h1 align="center">Noty Talkie</h1>
 </a>
 
 <p align="center">
@@ -59,3 +59,12 @@ You can deploy this template by setting up the following services and adding the
 - [ ] Account for layout shift on the dashboard page when refreshing – show a loading state on content?
 - [ ] Make action items animate out + make checkbox rounded + add a little check icon on hover
 - [ ] Migrate to incredibly fast whisper
+<!-- Update social media metadata -->
+<meta property="og:title" content="Noty Talkie – AI-powered voice note taking and content generation. " />
+<meta property="og:description" content="Noty Talkie helps you create, edit, and manage text content with AI assistance" />
+<meta property="og:image" content="https://notytalkie.com/og-image.png" />
+<meta property="og:url" content="https://notytalkie.com" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Noty Talkie – AI-powered voice note taking and content generation." />
+<meta name="twitter:description" content="Noty Talkie helps you create, edit, and manage text content with AI assistanc" />
+<meta name="twitter:image" content="https://notytalkie.com/public/images/app.jpg"/>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="256" height="256" viewBox="0 0 256 256" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <!-- Background Circle -->
+    <circle cx="128" cy="128" r="120" fill="#F4F4F5" />
+    
+    <!-- Microphone Body -->
+    <rect x="108" y="68" width="40" height="80" rx="20" fill="#27272A" />
+    
+    <!-- Microphone Stand -->
+    <rect x="118" y="148" width="20" height="40" fill="#27272A" />
+    <rect x="88" y="188" width="80" height="8" rx="4" fill="#27272A" />
+    
+    <!-- Sound Waves -->
+    <path d="M88 108C88 108 78 108 78 128C78 148 88 148 88 148" stroke="#71717A" stroke-width="4" stroke-linecap="round"/>
+    <path d="M168 108C168 108 178 108 178 128C178 148 168 148 168 148" stroke="#71717A" stroke-width="4" stroke-linecap="round"/>
+    <path d="M68 98C68 98 58 98 58 128C58 158 68 158 68 158" stroke="#71717A" stroke-width="4" stroke-linecap="round"/>
+    <path d="M188 98C188 98 198 98 198 128C198 158 188 158 188 158" stroke="#71717A" stroke-width="4" stroke-linecap="round"/>
+    
+    <!-- Recording Indicator -->
+    <circle cx="128" cy="48" r="8" fill="#EF4444">
+        <animate attributeName="opacity" values="1;0.5;1" dur="2s" repeatCount="indefinite" />
+    </circle>
+</svg> 
