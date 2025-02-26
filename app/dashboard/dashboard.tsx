@@ -241,6 +241,16 @@ export default function DashboardHomePage({
                 </div>
               )}
             </div>
+            <div className="mx-auto mt-8 max-w-7xl px-4 text-right sm:px-6">
+              <a
+                href="https://docs.google.com/forms/d/e/1FAIpQLSehsyR2hUwSqQyabfiJNpXdsomGglBbyNwQGmEtEdelotBsVg/viewform?usp=header"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-sm text-zinc-500 transition-colors hover:text-zinc-700"
+              >
+                Leave feedback
+              </a>
+            </div>
           </main>
         </div>
       </div>
