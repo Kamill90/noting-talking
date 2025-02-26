@@ -86,9 +86,8 @@ export default function RecordingDesktop({ note, customPoints, customTranscripti
       <MenuItem key={point._id}>
         {({ active }) => (
           <button
-            className={`${
-              active ? 'bg-gray-100 text-gray-900' : 'text-gray-700'
-            } group flex w-full items-center px-4 py-2 text-sm`}
+            className={`${active ? 'bg-muted text-foreground' : 'text-foreground-muted'
+              } group flex w-full items-center px-4 py-2 text-sm`}
             onClick={() => {
               sendGAEvent('event', 'create_custom_transcription', { point_title: point.title });
               createCustomTranscriptionWithScroll({
@@ -168,7 +167,7 @@ export default function RecordingDesktop({ note, customPoints, customTranscripti
           >
             <svg
               aria-hidden="true"
-              className="h-8 w-8 animate-spin fill-red-600 text-gray-200 dark:text-gray-600"
+              className="h-8 w-8 animate-spin fill-primary text-muted dark:text-muted"
               viewBox="0 0 100 101"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
@@ -187,36 +186,36 @@ export default function RecordingDesktop({ note, customPoints, customTranscripti
       )}
       <div className="flex min-h-screen flex-col">
         <div className="flex-grow">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
             <header className="py-4">
               <div className="flex items-center justify-between">
                 <Link
                   href="/dashboard"
-                  className="inline-flex items-center rounded-md px-3 py-1 text-sm text-sky-600 transition-colors duration-200 ease-in-out hover:bg-sky-50"
+                  className="inline-flex items-center rounded-md px-3 py-1 text-sm text-primary transition-colors duration-200 ease-in-out hover:bg-primary/10"
                 >
                   <ArrowLeft className="mr-2 h-4 w-4" aria-hidden="true" />
                   Back to dashboard
                 </Link>
-                <h4 className="text-sm text-zinc-500">{timestampToDate(_creationTime)}</h4>
+                <h4 className="text-sm text-muted-foreground">{timestampToDate(_creationTime)}</h4>
               </div>
-              <h1 className="mt-2 text-xl font-semibold leading-tight tracking-tight text-zinc-800">
+              <h1 className="mt-4 text-center text-2xl font-semibold leading-tight tracking-tight text-foreground">
                 {title}
               </h1>
             </header>
-            <main>
-              <div className="my-5">
-                <div className="flex justify-between">
-                  <h4 className="pb-2 font-semibold text-zinc-800">Summary</h4>
+            <main className="mt-8">
+              <div className="rounded-lg border border-border bg-card p-6 shadow-sm">
+                <div className="mb-8">
+                  <h4 className="mb-3 font-semibold text-foreground">Summary</h4>
+                  <div className="rounded-lg bg-muted/50 p-4 text-foreground">{summary}</div>
                 </div>
-                <div className="text-zinc-800">{summary}</div>
-              </div>
-              <Transcription note={note} target="transcription" onCopy={handleCopy} />
-              {customTranscriptions.length
-                ? customTranscriptions.map((customTranscription) =>
+                <Transcription note={note} target="transcription" onCopy={handleCopy} />
+                {customTranscriptions.length
+                  ? customTranscriptions.map((customTranscription) =>
                     customTranscription.error ? null : customTranscription.loading ? (
                       <div
                         key={customTranscription._id}
                         ref={(el) => setCustomTranscriptionRef(el, customTranscription._id)}
+                        className="my-6"
                       >
                         <InlineLoader text={`Generating ${customTranscription.title}`} />
                       </div>
@@ -229,20 +228,21 @@ export default function RecordingDesktop({ note, customPoints, customTranscripti
                       />
                     ),
                   )
-                : null}
+                  : null}
+              </div>
             </main>
           </div>
         </div>
         {!loading && (
-          <footer className="sticky bottom-0 mt-auto border-t border-gray-200 bg-white">
-            <div className="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8">
+          <footer className="sticky bottom-0 mt-auto border-t border-border bg-background">
+            <div className="mx-auto max-w-3xl px-4 py-4 sm:px-6 lg:px-8">
               <div className="flex flex-col space-y-2 sm:flex-row sm:items-center sm:space-y-0">
-                <div className="text-sm text-gray-500 sm:w-24">Create new</div>
+                <div className="text-sm text-muted-foreground sm:w-24">Create new</div>
                 <div className="flex flex-grow flex-wrap items-center gap-2">
                   {inlineCustomPoints.map((point) => (
                     <button
                       key={point._id}
-                      className="rounded-md px-3 py-1 text-sm text-sky-600 hover:bg-sky-50"
+                      className="rounded-md px-3 py-1 text-sm text-primary hover:bg-primary/10"
                       onClick={() => {
                         sendGAEvent('event', 'create_custom_transcription', {
                           point_title: point.title,
@@ -260,21 +260,24 @@ export default function RecordingDesktop({ note, customPoints, customTranscripti
                   {dropdownCustomPoints.length > 0 && (
                     <Menu as="div" className="relative inline-block text-left">
                       <div>
-                        <MenuButton className="inline-flex items-center rounded-md px-3 py-1 text-sm text-sky-600 hover:bg-sky-50">
+                        <MenuButton className="inline-flex w-full justify-center rounded-md px-3 py-1 text-sm text-primary hover:bg-primary/10">
                           More
-                          <ChevronUpIcon className="-mr-1 ml-2 h-5 w-5" aria-hidden="true" />
+                          <ChevronUpIcon
+                            className="-mr-1 ml-2 h-5 w-5"
+                            aria-hidden="true"
+                          />
                         </MenuButton>
                       </div>
-                      <MenuItems className="absolute bottom-full left-0 z-10 mb-2 w-56 origin-bottom-left rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                      <MenuItems className="absolute bottom-full right-0 z-10 mb-2 w-56 origin-bottom-right rounded-md bg-popover border border-border shadow-lg focus:outline-none">
                         <div className="py-1">{renderCustomPoints()}</div>
                       </MenuItems>
                     </Menu>
                   )}
                   <button
-                    className="rounded-md px-3 py-1 text-sm text-sky-600 hover:bg-sky-50"
+                    className="rounded-md px-3 py-1 text-sm text-primary hover:bg-primary/10"
                     onClick={openDialog}
                   >
-                    Add Custom
+                    + Add custom
                   </button>
                 </div>
               </div>
@@ -282,7 +285,7 @@ export default function RecordingDesktop({ note, customPoints, customTranscripti
           </footer>
         )}
       </div>
-      {showToast && <Toast message="Copied to clipboard" onClose={() => setShowToast(false)} />}
+      {showToast && <Toast message="Copied to clipboard!" onClose={() => setShowToast(false)} />}
     </>
   );
 }

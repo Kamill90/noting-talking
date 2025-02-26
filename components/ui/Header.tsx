@@ -1,6 +1,7 @@
 import { currentUser } from '@clerk/nextjs';
 import Link from 'next/link';
 import { UserNav } from './UserNav';
+import { Button } from './shadcn/button';
 
 export default async function Header() {
   const user = await currentUser();
@@ -30,9 +31,9 @@ export default async function Header() {
             />
           ) : (
             <Link href="/dashboard">
-              <button className="text-md primary-gradient primary-shadow rounded-lg px-5 py-1 text-center text-light md:px-10 md:py-2 md:text-xl">
+              <Button variant="default" className="rounded-lg">
                 Sign in
-              </button>
+              </Button>
             </Link>
           )}
         </div>

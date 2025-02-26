@@ -8,7 +8,7 @@ interface Props {
   isOpen: boolean;
   close: () => void;
   submit: (title: string, description: string) => void;
-  title: string; // Added title prop
+  title: string;
   initialTitle?: string;
   initialDescription?: string;
 }
@@ -44,14 +44,14 @@ export default function Dialog({
     <ReactDialog open={isOpen} onClose={close}>
       <DialogBackdrop className="fixed inset-0 bg-black/30" aria-hidden="true" />
       <DialogPanel className="fixed inset-0 flex items-center justify-center p-4">
-        <div className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
-          <h2 className="text-center text-2xl font-bold leading-9 tracking-tight text-zinc-800">
-            {title} {/* Use the title prop here */}
+        <div className="w-full max-w-md transform overflow-hidden rounded-lg border border-border bg-card p-6 text-left align-middle shadow-xl transition-all">
+          <h2 className="text-center text-2xl font-bold leading-9 tracking-tight text-foreground">
+            {title}
           </h2>
 
           <form onSubmit={handleSubmit} className="mt-8 space-y-6">
             <div>
-              <label htmlFor="title" className="block text-sm font-medium leading-6 text-zinc-800">
+              <label htmlFor="title" className="block text-sm font-medium leading-6 text-foreground">
                 Name
               </label>
               <div className="mt-2">
@@ -60,7 +60,7 @@ export default function Dialog({
                   id="title"
                   name="title"
                   required
-                  className="block w-full rounded-md border-0 py-1.5 text-zinc-800 shadow-sm ring-1 ring-inset ring-zinc-400 placeholder:text-zinc-400 focus:ring-2 focus:ring-inset focus:ring-zinc-800 sm:text-sm sm:leading-6"
+                  className="block w-full rounded-md border border-input bg-background py-1.5 text-foreground shadow-sm placeholder:text-muted-foreground focus:ring-2 focus:ring-ring sm:text-sm sm:leading-6"
                 />
               </div>
             </div>
@@ -68,7 +68,7 @@ export default function Dialog({
             <div>
               <label
                 htmlFor="description"
-                className="block text-sm font-medium leading-6 text-zinc-800"
+                className="block text-sm font-medium leading-6 text-foreground"
               >
                 Describe what type of content would you like to get
               </label>
@@ -78,7 +78,7 @@ export default function Dialog({
                   id="description"
                   name="What type of content would you like to create?"
                   required
-                  className="block w-full rounded-md border-0 py-1.5 text-zinc-800 shadow-sm ring-1 ring-inset ring-zinc-400 placeholder:text-zinc-400 focus:ring-2 focus:ring-inset focus:ring-zinc-800 sm:text-sm sm:leading-6"
+                  className="block w-full rounded-md border border-input bg-background py-1.5 text-foreground shadow-sm placeholder:text-muted-foreground focus:ring-2 focus:ring-ring sm:text-sm sm:leading-6"
                 />
               </div>
             </div>
@@ -87,13 +87,13 @@ export default function Dialog({
               <button
                 type="button"
                 onClick={close}
-                className="flex w-full justify-center rounded-md border border-zinc-800 px-3 py-1.5 text-sm font-semibold leading-6 text-zinc-800 shadow-sm hover:bg-zinc-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-600"
+                className="flex w-full justify-center rounded-md border border-input px-3 py-1.5 text-sm font-semibold leading-6 text-foreground shadow-sm hover:bg-muted focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
               >
                 Cancel
               </button>
               <button
                 type="submit"
-                className="flex w-full justify-center rounded-md bg-zinc-800 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-zinc-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-600"
+                className="flex w-full justify-center rounded-md bg-primary px-3 py-1.5 text-sm font-semibold leading-6 text-primary-foreground shadow-sm hover:bg-primary/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
               >
                 Add custom content
               </button>

@@ -1,6 +1,8 @@
 'use client';
 import usePlayer from '@/components/pages/hooks/usePlayer';
 import InlineLoader from '@/components/ui/InlineLoader';
+import { Button } from '@/components/ui/shadcn/button';
+import { Input } from '@/components/ui/shadcn/input';
 import { api } from '@/convex/_generated/api';
 import { Id } from '@/convex/_generated/dataModel';
 import { timestampToDate } from '@/convex/utils';
@@ -60,8 +62,8 @@ export default function DashboardHomePage({
           <a
             href="#"
             className={classNames(
-              focus ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
-              'block px-4 py-2 text-sm',
+              focus ? 'bg-accent text-accent-foreground' : 'text-foreground',
+              'block px-4 py-2 text-sm rounded-sm',
             )}
             onClick={() => {
               item.onClick(note._id);
@@ -83,33 +85,33 @@ export default function DashboardHomePage({
       .sort((a, b) => b._creationTime - a._creationTime)
       .map((note) => {
         return (
-          <li key={note._id} className="flex flex-row justify-between gap-x-6 border px-8 py-5">
+          <li key={note._id} className="flex flex-row justify-between gap-x-6 border border-border rounded-md px-8 py-5 bg-card text-card-foreground">
             <div className="flex w-14 flex-row items-center justify-start">
               {playerState.currentUrl === note.audioFileUrl ? (
                 <>
                   {playerState.isPaused ? (
                     <PlayIcon
                       type="button"
-                      className="mr-2 w-5 cursor-pointer opacity-100 transition-all duration-1000 ease-in-out hover:opacity-75"
+                      className="mr-2 w-5 cursor-pointer text-primary hover:text-primary/80 transition-colors"
                       onClick={resume}
                     />
                   ) : (
                     <PauseIcon
                       type="button"
-                      className="mr-2 w-5 cursor-pointer opacity-100 transition-all duration-1000 ease-in-out hover:opacity-75"
+                      className="mr-2 w-5 cursor-pointer text-primary hover:text-primary/80 transition-colors"
                       onClick={pause}
                     />
                   )}
 
                   <SquareIcon
-                    className="mr-2 w-5 cursor-pointer opacity-100 transition-all duration-1000 ease-in-out hover:opacity-75"
+                    className="mr-2 w-5 cursor-pointer text-primary hover:text-primary/80 transition-colors"
                     onClick={stop}
                   />
                 </>
               ) : (
                 <PlayIcon
                   type="button"
-                  className="mr-2 w-5 cursor-pointer opacity-100 transition-all duration-1000 ease-in-out hover:opacity-75"
+                  className="mr-2 w-5 cursor-pointer text-primary hover:text-primary/80 transition-colors"
                   onClick={() => {
                     sendGAEvent('event', 'play_audio', { note_id: note._id });
                     play(note.audioFileUrl);
@@ -120,7 +122,7 @@ export default function DashboardHomePage({
 
             {note.generatingTitle || note.generatingTranscript ? (
               <div className="flex basis-1/2 items-center">
-                <p className="font-montserrat text-sm font-semibold leading-6 text-zinc-800">
+                <p className="text-sm font-semibold leading-6 text-foreground">
                   Progressing...
                 </p>
                 <InlineLoader text="" />
@@ -128,7 +130,7 @@ export default function DashboardHomePage({
             ) : (
               <Link href={`/recording/${note._id}`} className="flex min-w-0 basis-1/2 gap-x-4">
                 <div className="min-w-0 flex-auto self-center">
-                  <p className="font-montserrat text-sm font-semibold leading-6 text-zinc-800">
+                  <p className="text-sm font-semibold leading-6 text-foreground">
                     {note.title}
                   </p>
                 </div>
@@ -136,14 +138,14 @@ export default function DashboardHomePage({
             )}
             {note._creationTime && (
               <div className="flex-end min-w-0 self-center">
-                <p className="mx-50 text-sm leading-6 text-zinc-800">
+                <p className="mx-50 text-sm leading-6 text-muted-foreground">
                   {timestampToDate(note._creationTime)}
                 </p>
               </div>
             )}
             <Menu as="div" className="flex-end relative inline-block self-center text-left">
               <div>
-                <MenuButton className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-white text-gray-400 hover:text-gray-600 focus:outline-none">
+                <MenuButton className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-background text-muted-foreground hover:text-foreground focus:outline-none focus:ring-2 focus:ring-ring">
                   <EllipsisVerticalIcon className="h-5 w-5" aria-hidden="true" />
                 </MenuButton>
               </div>
@@ -155,7 +157,7 @@ export default function DashboardHomePage({
                 leaveFrom="transform opacity-100 scale-100"
                 leaveTo="transform opacity-0 scale-95"
               >
-                <MenuItems className="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                <MenuItems className="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-popover border border-border shadow-md focus:outline-none">
                   <div className="py-1">{actions.map((item) => actionItems({ item, note }))}</div>
                 </MenuItems>
               </Transition>
@@ -180,7 +182,7 @@ export default function DashboardHomePage({
             <div className="mx-auto flex w-full max-w-7xl flex-row justify-between px-4 sm:px-6">
               <div className="relative flex h-12 items-center self-center">
                 {allNotes.length > 0 && (
-                  <input
+                  <Input
                     placeholder="Search for a voice note"
                     type="text"
                     name="search"
@@ -191,10 +193,23 @@ export default function DashboardHomePage({
                       setSearchQuery(newValue);
                       debouncedSendGAEvent(newValue);
                     }}
-                    className="block h-full w-full rounded-full border-0 py-1.5 pr-14 font-montserrat font-medium text-gray-900 shadow-sm ring-1 ring-inset ring-zinc-400 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-zinc-800 sm:text-sm sm:leading-6"
+                    className="h-12 w-full rounded-full pr-14 font-medium"
                   />
                 )}
               </div>
+              {allNotes.length > 0 && (
+                <Button
+                  disabled={isRecording}
+                  onClick={() => {
+                    sendGAEvent('event', 'start_recording');
+                    startRecording();
+                  }}
+                  variant="default"
+                  className="h-12 rounded-full px-6"
+                >
+                  Record note
+                </Button>
+              )}
             </div>
             <div className="mx-auto my-8 max-w-7xl sm:px-6">
               {allNotes.length ? (
@@ -210,33 +225,19 @@ export default function DashboardHomePage({
                       priority
                     />
                   </div>
-                  <h2 className="font-montserrat text-3xl font-semibold text-zinc-800">
+                  <h2 className="text-3xl font-semibold text-foreground">
                     Record your first note
                   </h2>
-                  <p className="max-w-md pb-2 text-center text-zinc-600">
+                  <p className="max-w-md pb-2 text-center text-muted-foreground">
                     Create content based on voice messages or record meetings and get summaries.
                   </p>
                   <div className="flex space-x-4">
-                    <button
-                      type="button"
-                      className="text-md rounded-lg px-4 py-2.5 font-montserrat font-semibold text-zinc-800 shadow-sm ring-1 ring-inset ring-zinc-300 hover:bg-zinc-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-600"
+                    <Button
+                      variant="outline"
+                      className="rounded-lg px-4 py-2.5"
                     >
                       Record meeting
-                    </button>
-                    <button
-                      disabled={isRecording}
-                      type="button"
-                      className={classNames(
-                        isRecording ? 'bg-zinc-300' : 'bg-zinc-800 hover:bg-zinc-700',
-                        'text-md rounded-lg px-6 py-2.5 font-montserrat font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-600',
-                      )}
-                      onClick={() => {
-                        sendGAEvent('event', 'start_recording');
-                        startRecording();
-                      }}
-                    >
-                      Record note
-                    </button>
+                    </Button>
                   </div>
                 </div>
               )}
@@ -246,7 +247,7 @@ export default function DashboardHomePage({
                 href="https://docs.google.com/forms/d/e/1FAIpQLSehsyR2hUwSqQyabfiJNpXdsomGglBbyNwQGmEtEdelotBsVg/viewform?usp=header"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-sm text-zinc-500 transition-colors hover:text-zinc-700"
+                className="text-sm text-muted-foreground hover:text-foreground transition-colors"
               >
                 Leave feedback
               </a>

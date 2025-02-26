@@ -6,7 +6,7 @@ import { internal } from './_generated/api';
 import { internalAction, internalMutation } from './_generated/server';
 
 const openai = new OpenAI({
-  apiKey: process.env.OPEN_AI_API_KEY,
+  apiKey: process.env.OPENAI_API_KEY,
 });
 
 interface ExtendedFilePropertyBag extends FilePropertyBag {
