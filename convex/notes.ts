@@ -30,6 +30,7 @@ export const createNote = mutationWithUser({
     await ctx.scheduler.runAfter(0, internal.whisper.chat, {
       fileUrl,
       id: noteId,
+      isMeeting: true
     });
 
     return noteId;

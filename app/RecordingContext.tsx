@@ -3,7 +3,7 @@ import { api } from '@/convex/_generated/api';
 import { useUser } from '@clerk/nextjs';
 import { useMutation } from 'convex/react';
 import { useRouter } from 'next/navigation';
-import React, { ReactNode, createContext, useEffect, useRef, useState } from 'react';
+import React, { createContext, ReactNode, useEffect, useRef, useState } from 'react';
 
 // Define the shape of the context state
 interface RecordingContextType {
@@ -69,11 +69,7 @@ export const RecordingContextProvider: React.FC<{ children: ReactNode }> = ({ ch
         const { storageId } = await result.json();
 
         if (user) {
-          let noteId = await createNote({
-            storageId,
-          });
-
-          // router.push(`/recording/${noteId}`);
+          await createNote({ storageId });
         }
       };
     } catch (err) {
