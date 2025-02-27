@@ -11,8 +11,8 @@ import { sendGAEvent } from '@next/third-parties/google';
 import { Preloaded, useMutation } from 'convex/react';
 import debounce from 'lodash/debounce';
 import { PauseIcon, PlayIcon, SquareIcon } from 'lucide-react';
-import Link from 'next/link';
 import Image from 'next/image';
+import Link from 'next/link';
 import { useCallback, useContext, useState } from 'react';
 import { RecordingContext } from '../RecordingContext';
 
@@ -195,6 +195,22 @@ export default function DashboardHomePage({
                   />
                 )}
               </div>
+              {allNotes.length > 0 && (
+                <button
+                  disabled={isRecording}
+                  type="button"
+                  className={classNames(
+                    isRecording ? 'bg-zinc-300' : 'bg-zinc-800 hover:bg-zinc-700',
+                    'text-md rounded-lg px-6 py-2.5 font-montserrat font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-600'
+                  )}
+                  onClick={() => {
+                    sendGAEvent('event', 'start_recording');
+                    startRecording();
+                  }}
+                >
+                  Record meeting
+                </button>
+              )}
             </div>
             <div className="mx-auto my-8 max-w-7xl sm:px-6">
               {allNotes.length ? (
@@ -220,6 +236,10 @@ export default function DashboardHomePage({
                     <button
                       type="button"
                       className="text-md rounded-lg px-4 py-2.5 font-montserrat font-semibold text-zinc-800 shadow-sm ring-1 ring-inset ring-zinc-300 hover:bg-zinc-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-600"
+                      onClick={() => {
+                        sendGAEvent('event', 'start_recording');
+                        startRecording();
+                      }}
                     >
                       Record meeting
                     </button>
@@ -231,8 +251,7 @@ export default function DashboardHomePage({
                         'text-md rounded-lg px-6 py-2.5 font-montserrat font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-600',
                       )}
                       onClick={() => {
-                        sendGAEvent('event', 'start_recording');
-                        startRecording();
+                        alert('soon')
                       }}
                     >
                       Record note

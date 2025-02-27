@@ -42,6 +42,8 @@ export const RecordingContextProvider: React.FC<{ children: ReactNode }> = ({ ch
   const [totalSeconds, setTotalSeconds] = useState(0);
   const { user } = useUser();
   const intervalRef = useRef<NodeJS.Timeout>();
+  const audioContextRef = useRef<AudioContext | null>(null);
+  const screenStreamRef = useRef<MediaStream | null>(null);
 
   const generateUploadUrl = useMutation(api.notes.generateUploadUrl);
   const createNote = useMutation(api.notes.createNote);
@@ -50,8 +52,21 @@ export const RecordingContextProvider: React.FC<{ children: ReactNode }> = ({ ch
 
   const initMediaRecorder = async () => {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      mediaRecorderRef.current = new MediaRecorder(stream);
+      const micStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const screenStream = await navigator.mediaDevices.getDisplayMedia({ audio: true });
+      screenStreamRef.current = screenStream;
+
+      const audioContext = new AudioContext();
+      audioContextRef.current = audioContext;
+      const systemSource = audioContext.createMediaStreamSource(screenStream);
+      const micSource = audioContext.createMediaStreamSource(micStream);
+      const destination = audioContext.createMediaStreamDestination();
+
+      micSource.connect(destination);
+      systemSource.connect(destination);
+
+      const mixedStream = destination.stream;
+      mediaRecorderRef.current = new MediaRecorder(mixedStream);
 
       mediaRecorderRef.current.ondataavailable = (event: BlobEvent) => {
         audioChunksRef.current.push(event.data);
@@ -73,7 +88,7 @@ export const RecordingContextProvider: React.FC<{ children: ReactNode }> = ({ ch
         }
       };
     } catch (err) {
-      console.error('Error accessing microphone', err);
+      console.error('Error accessing audio sources', err);
     }
   };
 
@@ -104,8 +119,26 @@ export const RecordingContextProvider: React.FC<{ children: ReactNode }> = ({ ch
       mediaRecorderRef.current.stop();
       setIsRecording(false);
       setIsPaused(false);
+
       mediaRecorderRef.current.stream.getTracks().forEach((track) => track.stop());
+      if (screenStreamRef.current) {
+        screenStreamRef.current.getTracks().forEach((track) => track.stop());
+        screenStreamRef.current = null;
+      }
+
+      if (audioContextRef.current) {
+        audioContextRef.current
+          .close()
+          .then(() => {
+            audioContextRef.current = null;
+          })
+          .catch((err) => console.error('Błąd zamykania AudioContext:', err));
+      }
+
       mediaRecorderRef.current = null;
+      navigator.mediaDevices.getUserMedia({ audio: true }).then((stream) => {
+        stream.getTracks().forEach((track) => track.stop());
+      });
     }
   };
 
@@ -132,6 +165,23 @@ export const RecordingContextProvider: React.FC<{ children: ReactNode }> = ({ ch
       audioChunksRef.current = [];
       setIsRecording(false);
       setIsPaused(false);
+      if (screenStreamRef.current) {
+        screenStreamRef.current.getTracks().forEach((track) => track.stop());
+        screenStreamRef.current = null;
+      }
+
+      if (audioContextRef.current) {
+        audioContextRef.current
+          .close()
+          .then(() => {
+            audioContextRef.current = null;
+          })
+          .catch((err) => console.error('Błąd zamykania AudioContext:', err));
+      }
+
+      navigator.mediaDevices.getUserMedia({ audio: true }).then((stream) => {
+        stream.getTracks().forEach((track) => track.stop());
+      });
     }
   };
 
