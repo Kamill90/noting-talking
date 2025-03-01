@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@clerk/nextjs": "^4.29.7",
+    "@deepgram/sdk": "^3.11.1",
     "@headlessui/react": "^2.1.8",
     "@heroicons/react": "^2.1.5",
     "@instructor-ai/instructor": "^0.0.5",

@@ -6,34 +6,38 @@ import { internal } from './_generated/api';
 import { internalAction, internalMutation, internalQuery } from './_generated/server';
 import { GeneratingValue } from './notes';
 
-const togetherApiKey = process.env.TOGETHER_API_KEY ?? 'undefined';
 const openAIApiKey = process.env.OPEN_AI_API_KEY ?? 'undefined';
-
-// Together client for LLM extraction
-const togetherai = new OpenAI({
-  apiKey: togetherApiKey,
-  baseURL: 'https://api.together.xyz/v1',
-});
 
 const openAI = new OpenAI({
   apiKey: openAIApiKey,
 });
 
-// Instructor for returning structured JSON
 export const client = Instructor({
   client: openAI,
   mode: 'JSON_SCHEMA',
 });
 
-const NoteSchema = z.object({
-  title: z.string().describe('Short descriptive title of what the voice message is about'),
-  summary: z
-    .string()
-    .describe(
-      'A short summary in the first person point of view of the person recording the voice message',
-    )
-    .max(500),
-});
+const extract = async (transcript: string, prompt: string) => {
+  return await client.chat.completions.create({
+    model: 'gpt-4o',
+    messages: [
+      {
+        role: 'system',
+        content: prompt
+          // 'The following is a transcript of a voice message. Extract a title, summary (summary should be max 20 words long) from it and answer in JSON in this format: {title: string, summary: string}',
+      },
+      { role: 'user', content: transcript },
+    ],
+    response_format: {
+      type: 'text',
+    },
+    temperature: 0.6,
+    max_tokens: 1000,
+    top_p: 1,
+    frequency_penalty: 0,
+    presence_penalty: 0,
+  });
+};
 
 export const chat = internalAction({
   args: {
@@ -44,33 +48,16 @@ export const chat = internalAction({
     const { transcript } = args;
 
     try {
-      const extract = await client.chat.completions.create({
-        model: "gpt-4o",
-        messages: [
-          {
-            role: 'system',
-            content:
-              'The following is a transcript of a voice message. Extract a title, summary (summary should be max 20 words long) from it and answer in JSON in this format: {title: string, summary: string}',
-          },
-          { role: 'user', content: transcript },
-        ],
-        response_format: {
-          "type": "text"
-        },
-        temperature: 0.6,
-        max_tokens: 1000,
-        top_p: 1,
-        frequency_penalty: 0,
-        presence_penalty: 0
-      });
+      const titleResponse = await extract(transcript, 'Extract title of the given text. return only a title with max 10 words')
+      const summaryResponse = await extract(transcript, 'Extract summary of the given text. return only a title with max 30 words')
+      
+      const title = titleResponse.choices[0].message.content
+      const summary = summaryResponse.choices[0].message.content
 
-      const response = extract.choices.find(choice => choice.message.role === 'assistant')
-      const modifiedTranscript = response?.message.content || '';
-      const {summary, title} = JSON.parse(modifiedTranscript) 
       await ctx.runMutation(internal.together.saveSummary, {
         id: args.id,
-        summary,
-        title,
+        summary: summary || 'Summary failed to generate',
+        title: title || 'Title',
       });
     } catch (e) {
       console.error('Error extracting from voice message', e);
@@ -186,60 +173,3 @@ export type SearchResult = {
   id: string;
   score: number;
 };
-
-// export const similarNotes = actionWithUser({
-//   args: {
-//     searchQuery: v.string(),
-//   },
-//   handler: async (ctx, args): Promise<SearchResult[]> => {
-//     const getEmbedding = await togetherai.embeddings.create({
-//       input: [args.searchQuery.replace('/n', ' ')],
-//       model: 'togethercomputer/m2-bert-80M-32k-retrieval',
-//     });
-//     const embedding = getEmbedding.data[0].embedding;
-
-//     // 2. Then search for similar notes
-//     const results = await ctx.vectorSearch('notes', 'by_embedding', {
-//       vector: embedding,
-//       limit: 16,
-//       filter: (q) => q.eq('userId', ctx.userId), // Only search my notes.
-//     });
-
-//     return results.map((r) => ({
-//       id: r._id,
-//       score: r._score,
-//     }));
-//   },
-// });
-
-export const embed = internalAction({
-  args: {
-    id: v.id('notes'),
-    transcript: v.string(),
-  },
-  handler: async (ctx, args) => {
-    const getEmbedding = await togetherai.embeddings.create({
-      input: [args.transcript.replace('/n', ' ')],
-      model: 'togethercomputer/m2-bert-80M-32k-retrieval',
-    });
-    const embedding = getEmbedding.data[0].embedding;
-
-    await ctx.runMutation(internal.together.saveEmbedding, {
-      id: args.id,
-      embedding,
-    });
-  },
-});
-
-export const saveEmbedding = internalMutation({
-  args: {
-    id: v.id('notes'),
-    embedding: v.array(v.float64()),
-  },
-  handler: async (ctx, args) => {
-    const { id, embedding } = args;
-    await ctx.db.patch(id, {
-      embedding: embedding,
-    });
-  },
-});
