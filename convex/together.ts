@@ -17,6 +17,28 @@ export const client = Instructor({
   mode: 'JSON_SCHEMA',
 });
 
+const extract = async (transcript: string, prompt: string) => {
+  return await client.chat.completions.create({
+    model: 'gpt-4o',
+    messages: [
+      {
+        role: 'system',
+        content: prompt
+          // 'The following is a transcript of a voice message. Extract a title, summary (summary should be max 20 words long) from it and answer in JSON in this format: {title: string, summary: string}',
+      },
+      { role: 'user', content: transcript },
+    ],
+    response_format: {
+      type: 'text',
+    },
+    temperature: 0.6,
+    max_tokens: 1000,
+    top_p: 1,
+    frequency_penalty: 0,
+    presence_penalty: 0,
+  });
+};
+
 export const chat = internalAction({
   args: {
     id: v.id('notes'),
@@ -26,33 +48,16 @@ export const chat = internalAction({
     const { transcript } = args;
 
     try {
-      const extract = await client.chat.completions.create({
-        model: "gpt-4o",
-        messages: [
-          {
-            role: 'system',
-            content:
-              'The following is a transcript of a voice message. Extract a title, summary (summary should be max 20 words long) from it and answer in JSON in this format: {title: string, summary: string}',
-          },
-          { role: 'user', content: transcript },
-        ],
-        response_format: {
-          "type": "text"
-        },
-        temperature: 0.6,
-        max_tokens: 1000,
-        top_p: 1,
-        frequency_penalty: 0,
-        presence_penalty: 0
-      });
+      const titleResponse = await extract(transcript, 'Extract title of the given text. return only a title with max 10 words')
+      const summaryResponse = await extract(transcript, 'Extract summary of the given text. return only a title with max 30 words')
+      
+      const title = titleResponse.choices[0].message.content
+      const summary = summaryResponse.choices[0].message.content
 
-      const response = extract.choices.find(choice => choice.message.role === 'assistant')
-      const modifiedTranscript = response?.message.content || '';
-      const {summary, title} = JSON.parse(modifiedTranscript) 
       await ctx.runMutation(internal.together.saveSummary, {
         id: args.id,
-        summary,
-        title,
+        summary: summary || 'Summary failed to generate',
+        title: title || 'Title',
       });
     } catch (e) {
       console.error('Error extracting from voice message', e);

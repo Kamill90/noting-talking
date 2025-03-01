@@ -2,21 +2,13 @@
 
 import { createClient } from '@deepgram/sdk';
 import { v } from 'convex/values';
-import OpenAI, { toFile } from 'openai';
 import { internal } from './_generated/api';
 import { internalAction, internalMutation } from './_generated/server';
 
-const openai = new OpenAI({
-  apiKey: process.env.OPEN_AI_API_KEY,
-});
-
 const deepgramApiKey = process.env.DEEPGRAM_API_KEY;
 const deepgram = createClient(deepgramApiKey);
-interface ExtendedFilePropertyBag extends FilePropertyBag {
-  contentType?: string;
-}
 
-const deepGramTranscription = async (url: string) => {
+const deepGramTranscription = async (url: string, diarize: boolean) => {
   console.log('deepGramTranscription',{url})
   const { result, error } = await deepgram.listen.prerecorded.transcribeUrl(
     {url},
@@ -24,7 +16,7 @@ const deepGramTranscription = async (url: string) => {
       model: 'nova-2',
       detect_language: true,
       smart_format: true,
-      diarize: true,
+      diarize
     },
   );
 
@@ -44,17 +36,6 @@ const deepGramTranscription = async (url: string) => {
   }
 }
 
-const whisperTranscription = async (url: string)=>{
-  var audio_file = await fetch(url);
-
-  return await openai.audio.transcriptions.create({
-    file: await toFile(audio_file, 'audio.wav', {
-      contentType: 'audio/wav',
-    } as ExtendedFilePropertyBag),
-    model: 'whisper-1',
-  });
-}
-
 export const chat = internalAction({
   args: {
     fileUrl: v.string(),
@@ -64,7 +45,7 @@ export const chat = internalAction({
   handler: async (ctx, args) => {
     try {
       console.log('chat', {args})
-      const transcription =  args.isMeeting ? await deepGramTranscription(args.fileUrl) : await whisperTranscription(args.fileUrl)
+      const transcription =  await deepGramTranscription(args.fileUrl, args.isMeeting)
       if(!transcription.text.length) {
         throw new Error('no transcription generated')
       }
