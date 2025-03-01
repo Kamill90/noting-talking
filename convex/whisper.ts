@@ -35,7 +35,7 @@ const deepGramTranscription = async (url: string) => {
     }
   } else {
 
-    console.log('wynik', JSON.stringify(result.results, null, 4));
+    console.log('wynik', JSON.stringify(result, null, 4));
 
     const transcript: string | undefined = result.results.channels[0].alternatives[0].paragraphs?.transcript
     return {
@@ -101,11 +101,6 @@ export const saveTranscript = internalMutation({
     await ctx.scheduler.runAfter(0, internal.together.chat, {
       id: args.id,
       transcript,
-    });
-
-    await ctx.scheduler.runAfter(0, internal.together.embed, {
-      id: args.id,
-      transcript: transcript,
     });
   },
 });

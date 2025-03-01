@@ -24,8 +24,6 @@ export default function DashboardHomePage({
   preloadedCustomPoints: Preloaded<typeof api.customPoints.getCustomPoints>;
 }) {
   const allNotes = usePreloadedQueryWithAuth(preloadedNotes);
-  const allCustomPoints = usePreloadedQueryWithAuth(preloadedCustomPoints);
-
   const { isRecording, startRecording } = useContext(RecordingContext);
 
   const [searchQuery, setSearchQuery] = useState('');
@@ -196,20 +194,37 @@ export default function DashboardHomePage({
                 )}
               </div>
               {allNotes.length > 0 && (
-                <button
-                  disabled={isRecording}
-                  type="button"
-                  className={classNames(
-                    isRecording ? 'bg-zinc-300' : 'bg-zinc-800 hover:bg-zinc-700',
-                    'text-md rounded-lg px-6 py-2.5 font-montserrat font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-600'
-                  )}
-                  onClick={() => {
-                    sendGAEvent('event', 'start_recording');
-                    startRecording();
-                  }}
-                >
-                  Record meeting
-                </button>
+                <div>
+                  <button
+                    disabled={isRecording}
+                    type="button"
+                    className={classNames(
+                      isRecording ? 'bg-zinc-300' : 'bg-zinc-800 hover:bg-zinc-700',
+                      'text-md mr-5 rounded-lg px-6 py-2.5 font-montserrat font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-600',
+                    )}
+                    onClick={() => {
+                      sendGAEvent('event', 'start_recording');
+                      startRecording(true);
+                    }}
+                  >
+                    Record meeting
+                  </button>
+
+                  <button
+                    disabled={isRecording}
+                    type="button"
+                    className={classNames(
+                      isRecording ? 'bg-zinc-300' : 'bg-zinc-800 hover:bg-zinc-700',
+                      'text-md rounded-lg px-6 py-2.5 font-montserrat font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-600',
+                    )}
+                    onClick={() => {
+                      sendGAEvent('event', 'start_recording');
+                      startRecording(false);
+                    }}
+                  >
+                    Record note
+                  </button>
+                </div>
               )}
             </div>
             <div className="mx-auto my-8 max-w-7xl sm:px-6">
@@ -234,11 +249,12 @@ export default function DashboardHomePage({
                   </p>
                   <div className="flex space-x-4">
                     <button
+                      disabled={isRecording}
                       type="button"
                       className="text-md rounded-lg px-4 py-2.5 font-montserrat font-semibold text-zinc-800 shadow-sm ring-1 ring-inset ring-zinc-300 hover:bg-zinc-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-600"
                       onClick={() => {
                         sendGAEvent('event', 'start_recording');
-                        startRecording();
+                        startRecording(true);
                       }}
                     >
                       Record meeting
@@ -251,7 +267,8 @@ export default function DashboardHomePage({
                         'text-md rounded-lg px-6 py-2.5 font-montserrat font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-600',
                       )}
                       onClick={() => {
-                        alert('soon')
+                        sendGAEvent('event', 'start_recording');
+                        startRecording(false);
                       }}
                     >
                       Record note
