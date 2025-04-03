@@ -1,7 +1,7 @@
 import { api } from '@/convex/_generated/api';
 import { Id } from '@/convex/_generated/dataModel';
 import { useMutation } from 'convex/react';
-import { MutableRefObject, useRef, useState, useEffect } from 'react';
+import { MutableRefObject, useEffect, useRef, useState } from 'react';
 
 export const CustomTranscription = ({
   note,
@@ -99,7 +99,7 @@ export const CustomTranscription = ({
         </div>
       </div>
       {disabled ? (
-        <div className="mt-2 text-zinc-800">{note.value}</div>
+        <div className="mt-2 whitespace-pre-wrap text-zinc-800">{note.value}</div>
       ) : (
         <div className="mt-2">
           <textarea

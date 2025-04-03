@@ -90,7 +90,7 @@ export const Transcription = ({
         </div>
       </div>
       {disabled ? (
-        <div className="mt-2 text-zinc-800">{text}</div>
+        <div className="mt-2 whitespace-pre-wrap p-2 text-zinc-800">{text}</div>
       ) : (
         <div className="mt-2">
           <textarea
