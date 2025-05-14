@@ -6,7 +6,7 @@ import { Id } from '@/convex/_generated/dataModel';
 import { timestampToDate } from '@/convex/utils';
 import { usePreloadedQueryWithAuth } from '@/lib/hooks';
 import { Menu, MenuButton, MenuItem, MenuItems, Transition } from '@headlessui/react';
-import { EllipsisVerticalIcon } from '@heroicons/react/20/solid';
+import { EllipsisVerticalIcon, ChevronDownIcon } from '@heroicons/react/20/solid';
 import { sendGAEvent } from '@next/third-parties/google';
 import { Preloaded, useMutation } from 'convex/react';
 import debounce from 'lodash/debounce';
@@ -195,35 +195,65 @@ export default function DashboardHomePage({
               </div>
               {allNotes.length > 0 && (
                 <div>
-                  <button
-                    disabled={isRecording}
-                    type="button"
-                    className={classNames(
-                      isRecording ? 'bg-zinc-300' : 'bg-zinc-800 hover:bg-zinc-700',
-                      'text-md mr-5 rounded-lg px-6 py-2.5 font-montserrat font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-600',
-                    )}
-                    onClick={() => {
-                      sendGAEvent('event', 'start_recording');
-                      startRecording(true);
-                    }}
-                  >
-                    Record meeting
-                  </button>
-
-                  <button
-                    disabled={isRecording}
-                    type="button"
-                    className={classNames(
-                      isRecording ? 'bg-zinc-300' : 'bg-zinc-800 hover:bg-zinc-700',
-                      'text-md rounded-lg px-6 py-2.5 font-montserrat font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-600',
-                    )}
-                    onClick={() => {
-                      sendGAEvent('event', 'start_recording');
-                      startRecording(false);
-                    }}
-                  >
-                    Record note
-                  </button>
+                  <Menu as="div" className="relative inline-block text-left">
+                    <div>
+                      <MenuButton
+                        disabled={isRecording}
+                        className={classNames(
+                          isRecording ? 'bg-zinc-300' : 'bg-zinc-800 hover:bg-zinc-700',
+                          'text-md inline-flex items-center rounded-lg px-6 py-2.5 font-montserrat font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-600'
+                        )}
+                      >
+                        Create new
+                        <ChevronDownIcon className="ml-2 -mr-1 h-5 w-5" aria-hidden="true" />
+                      </MenuButton>
+                    </div>
+                    <Transition
+                      enter="transition ease-out duration-100"
+                      enterFrom="transform opacity-0 scale-95"
+                      enterTo="transform opacity-100 scale-100"
+                      leave="transition ease-in duration-75"
+                      leaveFrom="transform opacity-100 scale-100"
+                      leaveTo="transform opacity-0 scale-95"
+                    >
+                      <MenuItems className="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                        <div className="py-1">
+                          <MenuItem>
+                            {({ active }) => (
+                              <button
+                                className={classNames(
+                                  active ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
+                                  'block w-full px-4 py-2 text-left text-sm'
+                                )}
+                                onClick={() => {
+                                  sendGAEvent('event', 'start_recording');
+                                  startRecording(false);
+                                }}
+                              >
+                                Note
+                              </button>
+                            )}
+                          </MenuItem>
+                          <MenuItem>
+                            {({ active }) => (
+                              <button
+                                className={classNames(
+                                  active ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
+                                  'block w-full px-4 py-2 text-left text-sm'
+                                )}
+                                onClick={() => {
+                                  sendGAEvent('event', 'start_recording');
+                                  startRecording(true);
+                                }}
+                              >
+                                Meeting recording
+                              </button>
+                            )}
+                          </MenuItem>
+                        </div>
+                      </MenuItems>
+                    </Transition>
+                  </Menu>
                 </div>
               )}
             </div>
@@ -248,31 +278,65 @@ export default function DashboardHomePage({
                     Create content based on voice messages or record meetings and get summaries.
                   </p>
                   <div className="flex space-x-4">
-                    <button
-                      disabled={isRecording}
-                      type="button"
-                      className="text-md rounded-lg px-4 py-2.5 font-montserrat font-semibold text-zinc-800 shadow-sm ring-1 ring-inset ring-zinc-300 hover:bg-zinc-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-600"
-                      onClick={() => {
-                        sendGAEvent('event', 'start_recording');
-                        startRecording(true);
-                      }}
-                    >
-                      Record meeting
-                    </button>
-                    <button
-                      disabled={isRecording}
-                      type="button"
-                      className={classNames(
-                        isRecording ? 'bg-zinc-300' : 'bg-zinc-800 hover:bg-zinc-700',
-                        'text-md rounded-lg px-6 py-2.5 font-montserrat font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-600',
-                      )}
-                      onClick={() => {
-                        sendGAEvent('event', 'start_recording');
-                        startRecording(false);
-                      }}
-                    >
-                      Record note
-                    </button>
+                    <Menu as="div" className="relative inline-block text-left">
+                      <div>
+                        <MenuButton
+                          disabled={isRecording}
+                          className={classNames(
+                            isRecording ? 'bg-zinc-300' : 'bg-zinc-800 hover:bg-zinc-700',
+                            'text-md inline-flex items-center rounded-lg px-6 py-2.5 font-montserrat font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-600'
+                          )}
+                        >
+                          Create new
+                          <ChevronDownIcon className="ml-2 -mr-1 h-5 w-5" aria-hidden="true" />
+                        </MenuButton>
+                      </div>
+                      <Transition
+                        enter="transition ease-out duration-100"
+                        enterFrom="transform opacity-0 scale-95"
+                        enterTo="transform opacity-100 scale-100"
+                        leave="transition ease-in duration-75"
+                        leaveFrom="transform opacity-100 scale-100"
+                        leaveTo="transform opacity-0 scale-95"
+                      >
+                        <MenuItems className="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                          <div className="py-1">
+                            <MenuItem>
+                              {({ active }) => (
+                                <button
+                                  className={classNames(
+                                    active ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
+                                    'block w-full px-4 py-2 text-left text-sm'
+                                  )}
+                                  onClick={() => {
+                                    sendGAEvent('event', 'start_recording');
+                                    startRecording(false);
+                                  }}
+                                >
+                                  Note
+                                </button>
+                              )}
+                            </MenuItem>
+                            <MenuItem>
+                              {({ active }) => (
+                                <button
+                                  className={classNames(
+                                    active ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
+                                    'block w-full px-4 py-2 text-left text-sm'
+                                  )}
+                                  onClick={() => {
+                                    sendGAEvent('event', 'start_recording');
+                                    startRecording(true);
+                                  }}
+                                >
+                                  Meeting recording
+                                </button>
+                              )}
+                            </MenuItem>
+                          </div>
+                        </MenuItems>
+                      </Transition>
+                    </Menu>
                   </div>
                 </div>
               )}
