@@ -86,9 +86,8 @@ export default function RecordingDesktop({ note, customPoints, customTranscripti
       <MenuItem key={point._id}>
         {({ active }) => (
           <button
-            className={`${
-              active ? 'bg-gray-100 text-gray-900' : 'text-gray-700'
-            } group flex w-full items-center px-4 py-2 text-sm`}
+            className={`${active ? 'bg-gray-100 text-gray-900' : 'text-gray-700'
+              } group flex w-full items-center px-4 py-2 text-sm`}
             onClick={() => {
               sendGAEvent('event', 'create_custom_transcription', { point_title: point.title });
               createCustomTranscriptionWithScroll({
@@ -161,14 +160,11 @@ export default function RecordingDesktop({ note, customPoints, customTranscripti
         title="Add custom instructions"
       />
       {loading && (
-        <div className="z-2 absolute h-full w-full bg-slate-300 opacity-70">
-          <div
-            role="status"
-            className="absolute left-1/2 top-2/4 -translate-x-1/2 -translate-y-1/2"
-          >
+        <div className="z-20 fixed inset-0 flex items-center justify-center bg-white/80 backdrop-blur-sm">
+          <div className="flex flex-col items-center rounded-lg bg-white p-6 shadow-lg">
             <svg
               aria-hidden="true"
-              className="h-8 w-8 animate-spin fill-red-600 text-gray-200 dark:text-gray-600"
+              className="h-12 w-12 animate-spin fill-zinc-600 text-zinc-200"
               viewBox="0 0 100 101"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
@@ -182,67 +178,109 @@ export default function RecordingDesktop({ note, customPoints, customTranscripti
                 fill="currentFill"
               />
             </svg>
+            <p className="mt-4 font-medium text-zinc-800">Processing your recording...</p>
           </div>
         </div>
       )}
-      <div className="flex min-h-screen flex-col">
+      <div className="flex min-h-screen flex-col bg-white">
         <div className="flex-grow">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <header className="py-4">
+          <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
+            <header className="py-6">
               <div className="flex items-center justify-between">
                 <Link
                   href="/dashboard"
-                  className="inline-flex items-center rounded-md px-3 py-1 text-sm text-sky-600 transition-colors duration-200 ease-in-out hover:bg-sky-50"
+                  className="inline-flex items-center rounded-md border border-zinc-200 bg-white px-4 py-2 text-sm font-medium text-zinc-700 shadow-sm transition-colors duration-200 ease-in-out hover:bg-zinc-50"
                 >
                   <ArrowLeft className="mr-2 h-4 w-4" aria-hidden="true" />
                   Back to dashboard
                 </Link>
-                <h4 className="text-sm text-zinc-500">{timestampToDate(_creationTime)}</h4>
+                <h4 className="text-sm font-medium text-zinc-500">{timestampToDate(_creationTime)}</h4>
               </div>
-              <h1 className="mt-2 text-xl font-semibold leading-tight tracking-tight text-zinc-800">
+              <h1 className="mt-4 text-2xl font-bold leading-tight tracking-tight text-zinc-800">
                 {title}
               </h1>
             </header>
-            <main>
-              <div className="my-5">
-                <div className="flex justify-between">
-                  <h4 className="pb-2 font-semibold text-zinc-800">Summary</h4>
-                </div>
-                <div className="text-zinc-800">{summary}</div>
-              </div>
-              <Transcription note={note} target="transcription" onCopy={handleCopy} />
-              {customTranscriptions.length
-                ? customTranscriptions.map((customTranscription) =>
-                    customTranscription.error ? null : customTranscription.loading ? (
-                      <div
-                        key={customTranscription._id}
-                        ref={(el) => setCustomTranscriptionRef(el, customTranscription._id)}
-                      >
-                        <InlineLoader text={`Generating ${customTranscription.title}`} />
+            <main className="pb-24">
+              <div className="overflow-hidden rounded-lg border border-zinc-200 bg-white shadow-sm">
+                <div className="notebook-page relative p-4 sm:p-8">
+                  {/* Right border to mimic notebook page */}
+                  <div className="absolute bottom-0 right-0 top-0 w-1 bg-gradient-to-b from-zinc-100 via-zinc-300 to-zinc-100"></div>
+
+                  {/* Page lines for notebook effect */}
+                  <div className="absolute inset-0 overflow-hidden">
+                    <div className="pointer-events-none absolute inset-y-0 left-0 right-0">
+                      {Array.from({ length: 40 }).map((_, i) => (
+                        <div
+                          key={i}
+                          className="border-b border-zinc-50"
+                          style={{
+                            height: '2rem',
+                            marginTop: i === 0 ? '2.5rem' : '0',
+                            opacity: 0.5
+                          }}
+                        ></div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="relative z-10">
+                    {/* Summary section */}
+                    <div className="mb-6 sm:mb-8 border-b border-zinc-200 pb-4 sm:pb-6">
+                      <div className="flex justify-between pb-2">
+                        <h4 className="font-semibold text-zinc-800">Summary</h4>
                       </div>
-                    ) : (
-                      <CustomTranscription
-                        key={customTranscription._id}
-                        note={customTranscription}
-                        onCopy={handleCopy}
-                        onRendered={handleCustomTranscriptionRendered}
-                      />
-                    ),
-                  )
-                : null}
+                      <div className="rounded-md border border-zinc-100 bg-white p-3 sm:p-4 text-zinc-800">
+                        {summary}
+                      </div>
+                    </div>
+
+                    {/* Transcription section */}
+                    <Transcription note={note} target="transcription" onCopy={handleCopy} />
+
+                    {/* Generated content sections */}
+                    {customTranscriptions.length ? (
+                      <div className="mt-6 sm:mt-8 space-y-4 sm:space-y-8">
+                        <h3 className="mb-2 inline-flex items-center rounded-md border border-zinc-900 bg-zinc-900 px-2.5 py-0.5 text-sm font-medium text-white">
+                          Generated content
+                        </h3>
+                        {customTranscriptions.map((customTranscription) =>
+                          customTranscription.error ? null : customTranscription.loading ? (
+                            <div
+                              key={customTranscription._id}
+                              ref={(el) => setCustomTranscriptionRef(el, customTranscription._id)}
+                              className="rounded-md border border-zinc-200 bg-white p-3 sm:p-4"
+                            >
+                              <InlineLoader text={`Generating ${customTranscription.title}`} />
+                            </div>
+                          ) : (
+                            <div key={customTranscription._id} className="relative rounded-md border border-zinc-200 bg-white p-3 sm:p-4 shadow-sm transition-shadow hover:shadow-md">
+                              <div className="absolute bottom-0 left-0 top-0 w-1 bg-zinc-300"></div>
+                              <CustomTranscription
+                                note={customTranscription}
+                                onCopy={handleCopy}
+                                onRendered={handleCustomTranscriptionRendered}
+                              />
+                            </div>
+                          )
+                        )}
+                      </div>
+                    ) : null}
+                  </div>
+                </div>
+              </div>
             </main>
           </div>
         </div>
         {!loading && (
-          <footer className="sticky bottom-0 mt-auto border-t border-gray-200 bg-white">
-            <div className="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8">
-              <div className="flex flex-col space-y-2 sm:flex-row sm:items-center sm:space-y-0">
-                <div className="text-sm text-gray-500 sm:w-24">Create new</div>
+          <footer className="sticky bottom-0 border-t border-zinc-200 bg-white shadow-md z-50">
+            <div className="mx-auto max-w-4xl px-4 py-4 sm:px-6 lg:px-8">
+              <div className="flex flex-col space-y-3 sm:flex-row sm:items-center sm:space-y-0">
+                <div className="text-sm font-medium text-zinc-700 sm:w-32">Create new</div>
                 <div className="flex flex-grow flex-wrap items-center gap-2">
                   {inlineCustomPoints.map((point) => (
                     <button
                       key={point._id}
-                      className="rounded-md px-3 py-1 text-sm text-sky-600 hover:bg-sky-50"
+                      className="rounded-md border border-zinc-200 bg-white px-4 py-2 text-sm font-medium text-zinc-700 shadow-sm transition-colors hover:bg-zinc-50"
                       onClick={() => {
                         sendGAEvent('event', 'create_custom_transcription', {
                           point_title: point.title,
@@ -260,18 +298,18 @@ export default function RecordingDesktop({ note, customPoints, customTranscripti
                   {dropdownCustomPoints.length > 0 && (
                     <Menu as="div" className="relative inline-block text-left">
                       <div>
-                        <MenuButton className="inline-flex items-center rounded-md px-3 py-1 text-sm text-sky-600 hover:bg-sky-50">
+                        <MenuButton className="inline-flex items-center rounded-md border border-zinc-200 bg-white px-4 py-2 text-sm font-medium text-zinc-700 shadow-sm transition-colors hover:bg-zinc-50">
                           More
                           <ChevronUpIcon className="-mr-1 ml-2 h-5 w-5" aria-hidden="true" />
                         </MenuButton>
                       </div>
-                      <MenuItems className="absolute bottom-full left-0 z-10 mb-2 w-56 origin-bottom-left rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                      <MenuItems className="absolute bottom-full left-0 z-10 mb-2 w-56 origin-bottom-left rounded-md bg-white shadow-lg ring-1 ring-zinc-200 focus:outline-none">
                         <div className="py-1">{renderCustomPoints()}</div>
                       </MenuItems>
                     </Menu>
                   )}
                   <button
-                    className="rounded-md px-3 py-1 text-sm text-sky-600 hover:bg-sky-50"
+                    className="rounded-md border border-zinc-200 bg-white px-4 py-2 text-sm font-medium text-zinc-700 shadow-sm transition-colors hover:bg-zinc-50"
                     onClick={openDialog}
                   >
                     Add Custom
