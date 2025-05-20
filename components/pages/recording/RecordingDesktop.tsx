@@ -86,8 +86,9 @@ export default function RecordingDesktop({ note, customPoints, customTranscripti
       <MenuItem key={point._id}>
         {({ active }) => (
           <button
-            className={`${active ? 'bg-gray-100 text-gray-900' : 'text-gray-700'
-              } group flex w-full items-center px-4 py-2 text-sm`}
+            className={`${
+              active ? 'bg-gray-100 text-gray-900' : 'text-gray-700'
+            } group flex w-full items-center px-4 py-2 text-sm`}
             onClick={() => {
               sendGAEvent('event', 'create_custom_transcription', { point_title: point.title });
               createCustomTranscriptionWithScroll({
@@ -160,7 +161,7 @@ export default function RecordingDesktop({ note, customPoints, customTranscripti
         title="Add custom instructions"
       />
       {loading && (
-        <div className="z-20 fixed inset-0 flex items-center justify-center bg-white/80 backdrop-blur-sm">
+        <div className="fixed inset-0 z-20 flex items-center justify-center bg-white/80 backdrop-blur-sm">
           <div className="flex flex-col items-center rounded-lg bg-white p-6 shadow-lg">
             <svg
               aria-hidden="true"
@@ -194,7 +195,9 @@ export default function RecordingDesktop({ note, customPoints, customTranscripti
                   <ArrowLeft className="mr-2 h-4 w-4" aria-hidden="true" />
                   Back to dashboard
                 </Link>
-                <h4 className="text-sm font-medium text-zinc-500">{timestampToDate(_creationTime)}</h4>
+                <h4 className="text-sm font-medium text-zinc-500">
+                  {timestampToDate(_creationTime)}
+                </h4>
               </div>
               <h1 className="mt-4 text-2xl font-bold leading-tight tracking-tight text-zinc-800">
                 {title}
@@ -216,7 +219,7 @@ export default function RecordingDesktop({ note, customPoints, customTranscripti
                           style={{
                             height: '2rem',
                             marginTop: i === 0 ? '2.5rem' : '0',
-                            opacity: 0.5
+                            opacity: 0.5,
                           }}
                         ></div>
                       ))}
@@ -225,11 +228,11 @@ export default function RecordingDesktop({ note, customPoints, customTranscripti
 
                   <div className="relative z-10">
                     {/* Summary section */}
-                    <div className="mb-6 sm:mb-8 border-b border-zinc-200 pb-4 sm:pb-6">
+                    <div className="mb-6 border-b border-zinc-200 pb-4 sm:mb-8 sm:pb-6">
                       <div className="flex justify-between pb-2">
                         <h4 className="font-semibold text-zinc-800">Summary</h4>
                       </div>
-                      <div className="rounded-md border border-zinc-100 bg-white p-3 sm:p-4 text-zinc-800">
+                      <div className="rounded-md border border-zinc-100 bg-white p-3 text-zinc-800 sm:p-4">
                         {summary}
                       </div>
                     </div>
@@ -239,7 +242,7 @@ export default function RecordingDesktop({ note, customPoints, customTranscripti
 
                     {/* Generated content sections */}
                     {customTranscriptions.length ? (
-                      <div className="mt-6 sm:mt-8 space-y-4 sm:space-y-8">
+                      <div className="mt-6 space-y-4 sm:mt-8 sm:space-y-8">
                         <h3 className="mb-2 inline-flex items-center rounded-md border border-zinc-900 bg-zinc-900 px-2.5 py-0.5 text-sm font-medium text-white">
                           Generated content
                         </h3>
@@ -253,7 +256,10 @@ export default function RecordingDesktop({ note, customPoints, customTranscripti
                               <InlineLoader text={`Generating ${customTranscription.title}`} />
                             </div>
                           ) : (
-                            <div key={customTranscription._id} className="relative rounded-md border border-zinc-200 bg-white p-3 sm:p-4 shadow-sm transition-shadow hover:shadow-md">
+                            <div
+                              key={customTranscription._id}
+                              className="relative rounded-md border border-zinc-200 bg-white p-3 shadow-sm transition-shadow hover:shadow-md sm:p-4"
+                            >
                               <div className="absolute bottom-0 left-0 top-0 w-1 bg-zinc-300"></div>
                               <CustomTranscription
                                 note={customTranscription}
@@ -261,7 +267,7 @@ export default function RecordingDesktop({ note, customPoints, customTranscripti
                                 onRendered={handleCustomTranscriptionRendered}
                               />
                             </div>
-                          )
+                          ),
                         )}
                       </div>
                     ) : null}
@@ -272,7 +278,7 @@ export default function RecordingDesktop({ note, customPoints, customTranscripti
           </div>
         </div>
         {!loading && (
-          <footer className="sticky bottom-0 border-t border-zinc-200 bg-white shadow-md z-50">
+          <footer className="sticky bottom-0 z-50 border-t border-zinc-200 bg-white shadow-md">
             <div className="mx-auto max-w-4xl px-4 py-4 sm:px-6 lg:px-8">
               <div className="flex flex-col space-y-3 sm:flex-row sm:items-center sm:space-y-0">
                 <div className="text-sm font-medium text-zinc-700 sm:w-32">Create new</div>
