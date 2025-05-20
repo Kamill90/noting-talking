@@ -86,9 +86,8 @@ export default function RecordingDesktop({ note, customPoints, customTranscripti
       <MenuItem key={point._id}>
         {({ active }) => (
           <button
-            className={`${
-              active ? 'bg-gray-100 text-gray-900' : 'text-gray-700'
-            } group flex w-full items-center px-4 py-2 text-sm`}
+            className={`${active ? 'bg-gray-100 text-gray-900' : 'text-gray-700'
+              } group flex w-full items-center px-4 py-2 text-sm`}
             onClick={() => {
               sendGAEvent('event', 'create_custom_transcription', { point_title: point.title });
               createCustomTranscriptionWithScroll({
@@ -315,9 +314,18 @@ export default function RecordingDesktop({ note, customPoints, customTranscripti
                     </Menu>
                   )}
                   <button
-                    className="rounded-md border border-zinc-200 bg-white px-4 py-2 text-sm font-medium text-zinc-700 shadow-sm transition-colors hover:bg-zinc-50"
+                    className="rounded-md border border-zinc-300 bg-zinc-800 px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-zinc-700 flex items-center"
                     onClick={openDialog}
                   >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="mr-1.5 h-4 w-4"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                    </svg>
                     Add Custom
                   </button>
                 </div>
