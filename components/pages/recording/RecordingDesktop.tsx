@@ -14,7 +14,7 @@ import useCustomPoints from '../hooks/useCustomPoints';
 import { CustomTranscription } from './subcomponents/CustomTranscription';
 import Dialog from './subcomponents/Dialog';
 import { Transcription } from './subcomponents/Transcription';
-import { AnimatePresence, motion } from 'framer-motion';
+import ConfirmDialog from './subcomponents/ConfirmDialog';
 
 interface Props {
   note: Doc<'notes'>;
@@ -51,7 +51,7 @@ export default function RecordingDesktop({ note, customPoints, customTranscripti
   const loading = generatingTranscript || generatingTitle;
   const addCustomPoint = useMutation(api.customPoints.createCustomPoint);
 
-  const { addCustomPoints } = useCustomPoints();
+  const { addCustomPoints, deleteCustomPoint } = useCustomPoints();
 
   const MAX_INLINE_CUSTOM_POINTS = 3;
   const inlineCustomPoints = customPoints.slice(0, MAX_INLINE_CUSTOM_POINTS);
@@ -106,9 +106,13 @@ export default function RecordingDesktop({ note, customPoints, customTranscripti
   };
 
   const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState("Copied to clipboard");
   const [fabOpen, setFabOpen] = useState(false);
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [pointToDelete, setPointToDelete] = useState<Id<'customPoints'> | null>(null);
 
   const handleCopy = () => {
+    setToastMessage("Copied to clipboard");
     setShowToast(true);
     setTimeout(() => setShowToast(false), 1000);
   };
@@ -157,6 +161,22 @@ export default function RecordingDesktop({ note, customPoints, customTranscripti
     }, 100);
   }, []);
 
+  const handleDeletePoint = (id: Id<'customPoints'>, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setPointToDelete(id);
+    setDeleteConfirmOpen(true);
+  };
+
+  const confirmDeletePoint = () => {
+    if (pointToDelete) {
+      deleteCustomPoint(pointToDelete);
+      setToastMessage("Custom prompt deleted");
+      setShowToast(true);
+      setPointToDelete(null);
+      setTimeout(() => setShowToast(false), 1000);
+    }
+  };
+
   return (
     <>
       <Dialog
@@ -165,6 +185,15 @@ export default function RecordingDesktop({ note, customPoints, customTranscripti
         submit={submitDialog}
         title="Add custom instructions"
       />
+
+      <ConfirmDialog
+        isOpen={deleteConfirmOpen}
+        close={() => setDeleteConfirmOpen(false)}
+        onConfirm={confirmDeletePoint}
+        title="Delete Custom Prompt"
+        message="Are you sure you want to delete this custom prompt? This action cannot be undone."
+      />
+
       {/* Mobile Floating Action Button */}
       <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end sm:hidden">
         {fabOpen && (
@@ -175,11 +204,11 @@ export default function RecordingDesktop({ note, customPoints, customTranscripti
         )}
 
         {fabOpen && (
-          <div className="mb-4 flex flex-col-reverse gap-3 items-end z-50">
-            {inlineCustomPoints.map((point) => (
+          <div className="mb-4 flex flex-col-reverse gap-3 items-end z-50 max-h-[70vh] overflow-y-auto pb-2">
+            {customPoints.map((point) => (
               <div key={point._id} className="transform translate-x-0 transition-all duration-200 ease-out">
                 <button
-                  className="flex items-center rounded-full bg-white px-4 py-2 text-sm font-medium text-zinc-700 shadow-md"
+                  className="flex items-center rounded-full bg-white px-4 py-2 text-sm font-medium text-zinc-700 shadow-md relative pr-10"
                   onClick={() => {
                     sendGAEvent('event', 'create_custom_transcription', {
                       point_title: point.title,
@@ -192,7 +221,18 @@ export default function RecordingDesktop({ note, customPoints, customTranscripti
                     setFabOpen(false);
                   }}
                 >
-                  {point.title}
+                  <span>{point.title}</span>
+                  {!DEFAULT_POINTS.some(defaultPoint => defaultPoint.title === point.title) && (
+                    <span
+                      className="absolute right-3 text-zinc-400 hover:text-zinc-600 top-1/2 transform -translate-y-1/2 flex items-center justify-center"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDeletePoint(point._id, e);
+                      }}
+                    >
+                      <X className="h-4 w-4" />
+                    </span>
+                  )}
                 </button>
               </div>
             ))}
@@ -341,15 +381,15 @@ export default function RecordingDesktop({ note, customPoints, customTranscripti
           </div>
         </div>
         {!loading && (
-          <footer className="sticky bottom-0 z-40 border-t border-zinc-200 bg-white shadow-md hidden sm:block">
+          <footer className="sticky bottom-0 z-40 border-t border-zinc-200 bg-white hidden sm:block">
             <div className="mx-auto max-w-4xl px-4 py-4 sm:px-6 lg:px-8">
               <div className="flex flex-col space-y-3 sm:flex-row sm:items-center sm:space-y-0">
-                <div className="text-sm font-medium text-zinc-700 sm:w-32">Create new</div>
+                <div className="text-sm font-medium text-zinc-700 sm:w-32">Generate content</div>
                 <div className="flex flex-grow flex-wrap items-center gap-2">
-                  {inlineCustomPoints.map((point) => (
+                  {customPoints.map((point) => (
                     <button
                       key={point._id}
-                      className="rounded-md border border-zinc-200 bg-white px-4 py-2 text-sm font-medium text-zinc-700 shadow-sm transition-colors hover:bg-zinc-50"
+                      className="relative rounded-md border border-zinc-200 bg-white px-4 py-2 text-sm font-medium text-zinc-700 shadow-sm transition-colors hover:bg-zinc-50 pr-10"
                       onClick={() => {
                         sendGAEvent('event', 'create_custom_transcription', {
                           point_title: point.title,
@@ -362,21 +402,20 @@ export default function RecordingDesktop({ note, customPoints, customTranscripti
                       }}
                     >
                       {point.title}
+                      {!DEFAULT_POINTS.some(defaultPoint => defaultPoint.title === point.title) && (
+                        <span
+                          className="absolute right-3 text-zinc-400 hover:text-zinc-600 top-1/2 transform -translate-y-1/2 flex items-center justify-center"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDeletePoint(point._id, e);
+                          }}
+                        >
+                          <X className="h-4 w-4" />
+                        </span>
+                      )}
                     </button>
                   ))}
-                  {dropdownCustomPoints.length > 0 && (
-                    <Menu as="div" className="relative inline-block text-left">
-                      <div>
-                        <MenuButton className="inline-flex items-center rounded-md border border-zinc-200 bg-white px-4 py-2 text-sm font-medium text-zinc-700 shadow-sm transition-colors hover:bg-zinc-50">
-                          More
-                          <ChevronUpIcon className="-mr-1 ml-2 h-5 w-5" aria-hidden="true" />
-                        </MenuButton>
-                      </div>
-                      <MenuItems className="absolute bottom-full left-0 z-10 mb-2 w-56 origin-bottom-left rounded-md bg-white shadow-lg ring-1 ring-zinc-200 focus:outline-none">
-                        <div className="py-1">{renderCustomPoints()}</div>
-                      </MenuItems>
-                    </Menu>
-                  )}
+
                   <button
                     className="rounded-md border border-zinc-300 bg-zinc-800 px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-zinc-700 flex items-center"
                     onClick={openDialog}
@@ -398,7 +437,7 @@ export default function RecordingDesktop({ note, customPoints, customTranscripti
           </footer>
         )}
       </div>
-      {showToast && <Toast message="Copied to clipboard" onClose={() => setShowToast(false)} />}
+      {showToast && <Toast message={toastMessage} onClose={() => setShowToast(false)} />}
     </>
   );
 }
