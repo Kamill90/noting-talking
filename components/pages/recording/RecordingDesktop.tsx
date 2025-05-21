@@ -7,13 +7,14 @@ import { DEFAULT_POINTS } from '@/lib/const';
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react';
 import { sendGAEvent } from '@next/third-parties/google';
 import { useMutation } from 'convex/react';
-import { ArrowLeft, ChevronUpIcon } from 'lucide-react';
+import { ArrowLeft, ChevronUpIcon, Plus, X } from 'lucide-react';
 import Link from 'next/link';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import useCustomPoints from '../hooks/useCustomPoints';
 import { CustomTranscription } from './subcomponents/CustomTranscription';
 import Dialog from './subcomponents/Dialog';
 import { Transcription } from './subcomponents/Transcription';
+import { AnimatePresence, motion } from 'framer-motion';
 
 interface Props {
   note: Doc<'notes'>;
@@ -105,10 +106,15 @@ export default function RecordingDesktop({ note, customPoints, customTranscripti
   };
 
   const [showToast, setShowToast] = useState(false);
+  const [fabOpen, setFabOpen] = useState(false);
 
   const handleCopy = () => {
     setShowToast(true);
-    setTimeout(() => setShowToast(false), 1000); // Hide toast after 1 second
+    setTimeout(() => setShowToast(false), 1000);
+  };
+
+  const toggleFab = () => {
+    setFabOpen(!fabOpen);
   };
 
   const customTranscriptionRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
@@ -159,6 +165,64 @@ export default function RecordingDesktop({ note, customPoints, customTranscripti
         submit={submitDialog}
         title="Add custom instructions"
       />
+      {/* Mobile Floating Action Button */}
+      <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end sm:hidden">
+        {fabOpen && (
+          <div
+            className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40"
+            onClick={() => setFabOpen(false)}
+          />
+        )}
+
+        {fabOpen && (
+          <div className="mb-4 flex flex-col-reverse gap-3 items-end z-50">
+            {inlineCustomPoints.map((point) => (
+              <div key={point._id} className="transform translate-x-0 transition-all duration-200 ease-out">
+                <button
+                  className="flex items-center rounded-full bg-white px-4 py-2 text-sm font-medium text-zinc-700 shadow-md"
+                  onClick={() => {
+                    sendGAEvent('event', 'create_custom_transcription', {
+                      point_title: point.title,
+                    });
+                    createCustomTranscriptionWithScroll({
+                      noteId: note._id,
+                      transcript: transcription,
+                      point,
+                    });
+                    setFabOpen(false);
+                  }}
+                >
+                  {point.title}
+                </button>
+              </div>
+            ))}
+
+            <div className="transform translate-x-0 transition-all duration-200 ease-out">
+              <button
+                className="flex items-center rounded-full bg-zinc-800 px-4 py-2 text-sm font-medium text-white shadow-md"
+                onClick={() => {
+                  openDialog();
+                  setFabOpen(false);
+                }}
+              >
+                Add Custom
+              </button>
+            </div>
+          </div>
+        )}
+
+        <button
+          onClick={toggleFab}
+          className={`rounded-full p-3 shadow-lg transition-transform duration-200 z-50 ${fabOpen ? 'bg-zinc-600 rotate-45' : 'bg-zinc-800'
+            }`}
+        >
+          {fabOpen ? (
+            <X className="h-6 w-6 text-white" />
+          ) : (
+            <Plus className="h-6 w-6 text-white" />
+          )}
+        </button>
+      </div>
       {loading && (
         <div className="fixed inset-0 z-20 flex items-center justify-center bg-white/80 backdrop-blur-sm">
           <div className="flex flex-col items-center rounded-lg bg-white p-6 shadow-lg">
@@ -277,7 +341,7 @@ export default function RecordingDesktop({ note, customPoints, customTranscripti
           </div>
         </div>
         {!loading && (
-          <footer className="sticky bottom-0 z-50 border-t border-zinc-200 bg-white shadow-md">
+          <footer className="sticky bottom-0 z-40 border-t border-zinc-200 bg-white shadow-md hidden sm:block">
             <div className="mx-auto max-w-4xl px-4 py-4 sm:px-6 lg:px-8">
               <div className="flex flex-col space-y-3 sm:flex-row sm:items-center sm:space-y-0">
                 <div className="text-sm font-medium text-zinc-700 sm:w-32">Create new</div>
