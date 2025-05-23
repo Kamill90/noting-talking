@@ -87,8 +87,9 @@ export default function RecordingDesktop({ note, customPoints, customTranscripti
       <MenuItem key={point._id}>
         {({ active }) => (
           <button
-            className={`${active ? 'bg-gray-100 text-gray-900' : 'text-gray-700'
-              } group flex w-full items-center px-4 py-2 text-sm`}
+            className={`${
+              active ? 'bg-gray-100 text-gray-900' : 'text-gray-700'
+            } group flex w-full items-center px-4 py-2 text-sm`}
             onClick={() => {
               sendGAEvent('event', 'create_custom_transcription', { point_title: point.title });
               createCustomTranscriptionWithScroll({
@@ -106,13 +107,13 @@ export default function RecordingDesktop({ note, customPoints, customTranscripti
   };
 
   const [showToast, setShowToast] = useState(false);
-  const [toastMessage, setToastMessage] = useState("Copied to clipboard");
+  const [toastMessage, setToastMessage] = useState('Copied to clipboard');
   const [fabOpen, setFabOpen] = useState(false);
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [pointToDelete, setPointToDelete] = useState<Id<'customPoints'> | null>(null);
 
   const handleCopy = () => {
-    setToastMessage("Copied to clipboard");
+    setToastMessage('Copied to clipboard');
     setShowToast(true);
     setTimeout(() => setShowToast(false), 1000);
   };
@@ -170,7 +171,7 @@ export default function RecordingDesktop({ note, customPoints, customTranscripti
   const confirmDeletePoint = () => {
     if (pointToDelete) {
       deleteCustomPoint(pointToDelete);
-      setToastMessage("Custom prompt deleted");
+      setToastMessage('Custom prompt deleted');
       setShowToast(true);
       setPointToDelete(null);
       setTimeout(() => setShowToast(false), 1000);
@@ -198,17 +199,20 @@ export default function RecordingDesktop({ note, customPoints, customTranscripti
       <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end sm:hidden">
         {fabOpen && (
           <div
-            className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40"
+            className="fixed inset-0 z-40 bg-black/20 backdrop-blur-sm"
             onClick={() => setFabOpen(false)}
           />
         )}
 
         {fabOpen && (
-          <div className="mb-4 flex flex-col-reverse gap-3 items-end z-50 max-h-[70vh] overflow-y-auto pb-2">
+          <div className="z-50 mb-4 flex max-h-[70vh] flex-col-reverse items-end gap-3 overflow-y-auto pb-2">
             {customPoints.map((point) => (
-              <div key={point._id} className="transform translate-x-0 transition-all duration-200 ease-out">
+              <div
+                key={point._id}
+                className="translate-x-0 transform transition-all duration-200 ease-out"
+              >
                 <button
-                  className="flex items-center rounded-full bg-white px-4 py-2 text-sm font-medium text-zinc-700 shadow-md relative pr-10"
+                  className="relative flex items-center rounded-full bg-white px-4 py-2 pr-10 text-sm font-medium text-zinc-700 shadow-md"
                   onClick={() => {
                     sendGAEvent('event', 'create_custom_transcription', {
                       point_title: point.title,
@@ -222,9 +226,9 @@ export default function RecordingDesktop({ note, customPoints, customTranscripti
                   }}
                 >
                   <span>{point.title}</span>
-                  {!DEFAULT_POINTS.some(defaultPoint => defaultPoint.title === point.title) && (
+                  {!DEFAULT_POINTS.some((defaultPoint) => defaultPoint.title === point.title) && (
                     <span
-                      className="absolute right-3 text-zinc-400 hover:text-zinc-600 top-1/2 transform -translate-y-1/2 flex items-center justify-center"
+                      className="absolute right-3 top-1/2 flex -translate-y-1/2 transform items-center justify-center text-zinc-400 hover:text-zinc-600"
                       onClick={(e) => {
                         e.stopPropagation();
                         handleDeletePoint(point._id, e);
@@ -237,7 +241,7 @@ export default function RecordingDesktop({ note, customPoints, customTranscripti
               </div>
             ))}
 
-            <div className="transform translate-x-0 transition-all duration-200 ease-out">
+            <div className="translate-x-0 transform transition-all duration-200 ease-out">
               <button
                 className="flex items-center rounded-full bg-zinc-800 px-4 py-2 text-sm font-medium text-white shadow-md"
                 onClick={() => {
@@ -253,14 +257,11 @@ export default function RecordingDesktop({ note, customPoints, customTranscripti
 
         <button
           onClick={toggleFab}
-          className={`rounded-full p-3 shadow-lg transition-transform duration-200 z-50 ${fabOpen ? 'bg-zinc-600 rotate-45' : 'bg-zinc-800'
-            }`}
+          className={`z-50 rounded-full p-3 shadow-lg transition-transform duration-200 ${
+            fabOpen ? 'rotate-45 bg-zinc-600' : 'bg-zinc-800'
+          }`}
         >
-          {fabOpen ? (
-            <X className="h-6 w-6 text-white" />
-          ) : (
-            <Plus className="h-6 w-6 text-white" />
-          )}
+          {fabOpen ? <X className="h-6 w-6 text-white" /> : <Plus className="h-6 w-6 text-white" />}
         </button>
       </div>
       {loading && (
@@ -381,7 +382,7 @@ export default function RecordingDesktop({ note, customPoints, customTranscripti
           </div>
         </div>
         {!loading && (
-          <footer className="sticky bottom-0 z-40 border-t border-zinc-200 bg-white hidden sm:block">
+          <footer className="sticky bottom-0 z-40 hidden border-t border-zinc-200 bg-white sm:block">
             <div className="mx-auto max-w-4xl px-4 py-4 sm:px-6 lg:px-8">
               <div className="flex flex-col space-y-3 sm:flex-row sm:items-center sm:space-y-0">
                 <div className="text-sm font-medium text-zinc-700 sm:w-32">Generate content</div>
@@ -389,7 +390,7 @@ export default function RecordingDesktop({ note, customPoints, customTranscripti
                   {customPoints.map((point) => (
                     <button
                       key={point._id}
-                      className="relative rounded-md border border-zinc-200 bg-white px-4 py-2 text-sm font-medium text-zinc-700 shadow-sm transition-colors hover:bg-zinc-50 pr-10"
+                      className="relative rounded-md border border-zinc-200 bg-white px-4 py-2 pr-10 text-sm font-medium text-zinc-700 shadow-sm transition-colors hover:bg-zinc-50"
                       onClick={() => {
                         sendGAEvent('event', 'create_custom_transcription', {
                           point_title: point.title,
@@ -402,9 +403,11 @@ export default function RecordingDesktop({ note, customPoints, customTranscripti
                       }}
                     >
                       {point.title}
-                      {!DEFAULT_POINTS.some(defaultPoint => defaultPoint.title === point.title) && (
+                      {!DEFAULT_POINTS.some(
+                        (defaultPoint) => defaultPoint.title === point.title,
+                      ) && (
                         <span
-                          className="absolute right-3 text-zinc-400 hover:text-zinc-600 top-1/2 transform -translate-y-1/2 flex items-center justify-center"
+                          className="absolute right-3 top-1/2 flex -translate-y-1/2 transform items-center justify-center text-zinc-400 hover:text-zinc-600"
                           onClick={(e) => {
                             e.stopPropagation();
                             handleDeletePoint(point._id, e);
@@ -417,7 +420,7 @@ export default function RecordingDesktop({ note, customPoints, customTranscripti
                   ))}
 
                   <button
-                    className="rounded-md border border-zinc-300 bg-zinc-800 px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-zinc-700 flex items-center"
+                    className="flex items-center rounded-md border border-zinc-300 bg-zinc-800 px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-zinc-700"
                     onClick={openDialog}
                   >
                     <svg
@@ -427,7 +430,12 @@ export default function RecordingDesktop({ note, customPoints, customTranscripti
                       viewBox="0 0 24 24"
                       stroke="currentColor"
                     >
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M12 4v16m8-8H4"
+                      />
                     </svg>
                     Add Custom
                   </button>
