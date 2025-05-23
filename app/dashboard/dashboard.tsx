@@ -204,7 +204,7 @@ export default function DashboardHomePage({
                           'text-md inline-flex items-center rounded-lg px-6 py-2.5 font-montserrat font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-600',
                         )}
                       >
-                        Create new
+                        Record new
                         <ChevronDownIcon className="-mr-1 ml-2 h-5 w-5" aria-hidden="true" />
                       </MenuButton>
                     </div>
@@ -246,7 +246,7 @@ export default function DashboardHomePage({
                                   startRecording(true);
                                 }}
                               >
-                                Meeting recording
+                                Meeting
                               </button>
                             )}
                           </MenuItem>
@@ -287,7 +287,7 @@ export default function DashboardHomePage({
                             'text-md inline-flex items-center rounded-lg px-6 py-2.5 font-montserrat font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-600',
                           )}
                         >
-                          Create new
+                          Record new
                           <ChevronDownIcon className="-mr-1 ml-2 h-5 w-5" aria-hidden="true" />
                         </MenuButton>
                       </div>
@@ -329,7 +329,7 @@ export default function DashboardHomePage({
                                     startRecording(true);
                                   }}
                                 >
-                                  Meeting recording
+                                  Meeting
                                 </button>
                               )}
                             </MenuItem>

@@ -7,13 +7,14 @@ import { DEFAULT_POINTS } from '@/lib/const';
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react';
 import { sendGAEvent } from '@next/third-parties/google';
 import { useMutation } from 'convex/react';
-import { ArrowLeft, ChevronUpIcon } from 'lucide-react';
+import { ArrowLeft, ChevronUpIcon, Plus, X } from 'lucide-react';
 import Link from 'next/link';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import useCustomPoints from '../hooks/useCustomPoints';
 import { CustomTranscription } from './subcomponents/CustomTranscription';
 import Dialog from './subcomponents/Dialog';
 import { Transcription } from './subcomponents/Transcription';
+import ConfirmDialog from './subcomponents/ConfirmDialog';
 
 interface Props {
   note: Doc<'notes'>;
@@ -50,7 +51,7 @@ export default function RecordingDesktop({ note, customPoints, customTranscripti
   const loading = generatingTranscript || generatingTitle;
   const addCustomPoint = useMutation(api.customPoints.createCustomPoint);
 
-  const { addCustomPoints } = useCustomPoints();
+  const { addCustomPoints, deleteCustomPoint } = useCustomPoints();
 
   const MAX_INLINE_CUSTOM_POINTS = 3;
   const inlineCustomPoints = customPoints.slice(0, MAX_INLINE_CUSTOM_POINTS);
@@ -106,10 +107,19 @@ export default function RecordingDesktop({ note, customPoints, customTranscripti
   };
 
   const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState('Copied to clipboard');
+  const [fabOpen, setFabOpen] = useState(false);
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [pointToDelete, setPointToDelete] = useState<Id<'customPoints'> | null>(null);
 
   const handleCopy = () => {
+    setToastMessage('Copied to clipboard');
     setShowToast(true);
-    setTimeout(() => setShowToast(false), 1000); // Hide toast after 1 second
+    setTimeout(() => setShowToast(false), 1000);
+  };
+
+  const toggleFab = () => {
+    setFabOpen(!fabOpen);
   };
 
   const customTranscriptionRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
@@ -152,6 +162,22 @@ export default function RecordingDesktop({ note, customPoints, customTranscripti
     }, 100);
   }, []);
 
+  const handleDeletePoint = (id: Id<'customPoints'>, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setPointToDelete(id);
+    setDeleteConfirmOpen(true);
+  };
+
+  const confirmDeletePoint = () => {
+    if (pointToDelete) {
+      deleteCustomPoint(pointToDelete);
+      setToastMessage('Custom prompt deleted');
+      setShowToast(true);
+      setPointToDelete(null);
+      setTimeout(() => setShowToast(false), 1000);
+    }
+  };
+
   return (
     <>
       <Dialog
@@ -160,6 +186,84 @@ export default function RecordingDesktop({ note, customPoints, customTranscripti
         submit={submitDialog}
         title="Add custom instructions"
       />
+
+      <ConfirmDialog
+        isOpen={deleteConfirmOpen}
+        close={() => setDeleteConfirmOpen(false)}
+        onConfirm={confirmDeletePoint}
+        title="Delete Custom Prompt"
+        message="Are you sure you want to delete this custom prompt? This action cannot be undone."
+      />
+
+      {/* Mobile Floating Action Button */}
+      <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end sm:hidden">
+        {fabOpen && (
+          <div
+            className="fixed inset-0 z-40 bg-black/20 backdrop-blur-sm"
+            onClick={() => setFabOpen(false)}
+          />
+        )}
+
+        {fabOpen && (
+          <div className="z-50 mb-4 flex max-h-[70vh] flex-col-reverse items-end gap-3 overflow-y-auto pb-2">
+            {customPoints.map((point) => (
+              <div
+                key={point._id}
+                className="translate-x-0 transform transition-all duration-200 ease-out"
+              >
+                <button
+                  className="relative flex items-center rounded-full bg-white px-4 py-2 pr-10 text-sm font-medium text-zinc-700 shadow-md"
+                  onClick={() => {
+                    sendGAEvent('event', 'create_custom_transcription', {
+                      point_title: point.title,
+                    });
+                    createCustomTranscriptionWithScroll({
+                      noteId: note._id,
+                      transcript: transcription,
+                      point,
+                    });
+                    setFabOpen(false);
+                  }}
+                >
+                  <span>{point.title}</span>
+                  {!DEFAULT_POINTS.some((defaultPoint) => defaultPoint.title === point.title) && (
+                    <span
+                      className="absolute right-3 top-1/2 flex -translate-y-1/2 transform items-center justify-center text-zinc-400 hover:text-zinc-600"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDeletePoint(point._id, e);
+                      }}
+                    >
+                      <X className="h-4 w-4" />
+                    </span>
+                  )}
+                </button>
+              </div>
+            ))}
+
+            <div className="translate-x-0 transform transition-all duration-200 ease-out">
+              <button
+                className="flex items-center rounded-full bg-zinc-800 px-4 py-2 text-sm font-medium text-white shadow-md"
+                onClick={() => {
+                  openDialog();
+                  setFabOpen(false);
+                }}
+              >
+                Add Custom
+              </button>
+            </div>
+          </div>
+        )}
+
+        <button
+          onClick={toggleFab}
+          className={`z-50 rounded-full p-3 shadow-lg transition-transform duration-200 ${
+            fabOpen ? 'rotate-45 bg-zinc-600' : 'bg-zinc-800'
+          }`}
+        >
+          {fabOpen ? <X className="h-6 w-6 text-white" /> : <Plus className="h-6 w-6 text-white" />}
+        </button>
+      </div>
       {loading && (
         <div className="fixed inset-0 z-20 flex items-center justify-center bg-white/80 backdrop-blur-sm">
           <div className="flex flex-col items-center rounded-lg bg-white p-6 shadow-lg">
@@ -278,15 +382,15 @@ export default function RecordingDesktop({ note, customPoints, customTranscripti
           </div>
         </div>
         {!loading && (
-          <footer className="sticky bottom-0 z-50 border-t border-zinc-200 bg-white shadow-md">
+          <footer className="sticky bottom-0 z-40 hidden border-t border-zinc-200 bg-white sm:block">
             <div className="mx-auto max-w-4xl px-4 py-4 sm:px-6 lg:px-8">
               <div className="flex flex-col space-y-3 sm:flex-row sm:items-center sm:space-y-0">
-                <div className="text-sm font-medium text-zinc-700 sm:w-32">Create new</div>
+                <div className="text-sm font-medium text-zinc-700 sm:w-32">Generate content</div>
                 <div className="flex flex-grow flex-wrap items-center gap-2">
-                  {inlineCustomPoints.map((point) => (
+                  {customPoints.map((point) => (
                     <button
                       key={point._id}
-                      className="rounded-md border border-zinc-200 bg-white px-4 py-2 text-sm font-medium text-zinc-700 shadow-sm transition-colors hover:bg-zinc-50"
+                      className="relative rounded-md border border-zinc-200 bg-white px-4 py-2 pr-10 text-sm font-medium text-zinc-700 shadow-sm transition-colors hover:bg-zinc-50"
                       onClick={() => {
                         sendGAEvent('event', 'create_custom_transcription', {
                           point_title: point.title,
@@ -299,25 +403,40 @@ export default function RecordingDesktop({ note, customPoints, customTranscripti
                       }}
                     >
                       {point.title}
+                      {!DEFAULT_POINTS.some(
+                        (defaultPoint) => defaultPoint.title === point.title,
+                      ) && (
+                        <span
+                          className="absolute right-3 top-1/2 flex -translate-y-1/2 transform items-center justify-center text-zinc-400 hover:text-zinc-600"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDeletePoint(point._id, e);
+                          }}
+                        >
+                          <X className="h-4 w-4" />
+                        </span>
+                      )}
                     </button>
                   ))}
-                  {dropdownCustomPoints.length > 0 && (
-                    <Menu as="div" className="relative inline-block text-left">
-                      <div>
-                        <MenuButton className="inline-flex items-center rounded-md border border-zinc-200 bg-white px-4 py-2 text-sm font-medium text-zinc-700 shadow-sm transition-colors hover:bg-zinc-50">
-                          More
-                          <ChevronUpIcon className="-mr-1 ml-2 h-5 w-5" aria-hidden="true" />
-                        </MenuButton>
-                      </div>
-                      <MenuItems className="absolute bottom-full left-0 z-10 mb-2 w-56 origin-bottom-left rounded-md bg-white shadow-lg ring-1 ring-zinc-200 focus:outline-none">
-                        <div className="py-1">{renderCustomPoints()}</div>
-                      </MenuItems>
-                    </Menu>
-                  )}
+
                   <button
-                    className="rounded-md border border-zinc-200 bg-white px-4 py-2 text-sm font-medium text-zinc-700 shadow-sm transition-colors hover:bg-zinc-50"
+                    className="flex items-center rounded-md border border-zinc-300 bg-zinc-800 px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-zinc-700"
                     onClick={openDialog}
                   >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="mr-1.5 h-4 w-4"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M12 4v16m8-8H4"
+                      />
+                    </svg>
                     Add Custom
                   </button>
                 </div>
@@ -326,7 +445,7 @@ export default function RecordingDesktop({ note, customPoints, customTranscripti
           </footer>
         )}
       </div>
-      {showToast && <Toast message="Copied to clipboard" onClose={() => setShowToast(false)} />}
+      {showToast && <Toast message={toastMessage} onClose={() => setShowToast(false)} />}
     </>
   );
 }
