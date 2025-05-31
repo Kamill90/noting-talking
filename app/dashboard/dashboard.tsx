@@ -1,6 +1,7 @@
 'use client';
 import usePlayer from '@/components/pages/hooks/usePlayer';
 import InlineLoader from '@/components/ui/InlineLoader';
+import { LanguagePicker } from '@/components/ui/LanguagePicker';
 import { api } from '@/convex/_generated/api';
 import { Id } from '@/convex/_generated/dataModel';
 import { timestampToDate } from '@/convex/utils';
@@ -27,6 +28,7 @@ export default function DashboardHomePage({
   const { isRecording, startRecording } = useContext(RecordingContext);
 
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedLanguage, setSelectedLanguage] = useState('en');
   const mutateNoteRemove = useMutation(api.notes.removeNote);
 
   const { playerState, play, pause, stop, resume } = usePlayer();
@@ -153,7 +155,7 @@ export default function DashboardHomePage({
                 leaveFrom="transform opacity-100 scale-100"
                 leaveTo="transform opacity-0 scale-95"
               >
-                <MenuItems className="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                <MenuItems className="absolute right-0 z-10 mt-2 w-80 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                   <div className="py-1">{actions.map((item) => actionItems({ item, note }))}</div>
                 </MenuItems>
               </Transition>
@@ -172,11 +174,11 @@ export default function DashboardHomePage({
 
   return (
     <>
-      <div className="min-h-full">
+      <div className="min-h-full pb-20 sm:pb-0">
         <div className="py-10">
           <main>
             <div className="mx-auto flex w-full max-w-7xl flex-row justify-between px-4 sm:px-6">
-              <div className="relative flex h-12 items-center self-center">
+              <div className="relative flex h-12 items-center self-center w-full sm:w-auto">
                 {allNotes.length > 0 && (
                   <input
                     placeholder="Search for a voice note"
@@ -194,7 +196,12 @@ export default function DashboardHomePage({
                 )}
               </div>
               {allNotes.length > 0 && (
-                <div>
+                <div className="hidden sm:flex items-center space-x-3">
+                  <LanguagePicker
+                    selectedLanguage={selectedLanguage}
+                    onLanguageChange={setSelectedLanguage}
+                    compact={true}
+                  />
                   <Menu as="div" className="relative inline-block text-left">
                     <div>
                       <MenuButton
@@ -277,7 +284,12 @@ export default function DashboardHomePage({
                   <p className="max-w-md pb-2 text-center text-zinc-600">
                     Create content based on voice messages or record meetings and get summaries.
                   </p>
-                  <div className="flex space-x-4">
+                  <div className="hidden sm:flex items-center space-x-3">
+                    <LanguagePicker
+                      selectedLanguage={selectedLanguage}
+                      onLanguageChange={setSelectedLanguage}
+                      compact={true}
+                    />
                     <Menu as="div" className="relative inline-block text-left">
                       <div>
                         <MenuButton
@@ -362,6 +374,77 @@ export default function DashboardHomePage({
                 </svg>
               </a>
             </div>
+          </div>
+        </div>
+
+        {/* Mobile floating controls */}
+        <div className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-zinc-200 px-4 py-3 sm:hidden">
+          <div className="flex items-center space-x-3">
+            <LanguagePicker
+              selectedLanguage={selectedLanguage}
+              onLanguageChange={setSelectedLanguage}
+              compact={true}
+              mobileBottomBar={true}
+            />
+            <Menu as="div" className="relative flex-1">
+              <div>
+                <MenuButton
+                  disabled={isRecording}
+                  className={classNames(
+                    isRecording ? 'bg-zinc-300' : 'bg-zinc-800 hover:bg-zinc-700',
+                    'w-full inline-flex items-center justify-center rounded-lg px-6 py-3 font-montserrat font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-600',
+                  )}
+                >
+                  Record new
+                  <ChevronDownIcon className="-mr-1 ml-2 h-5 w-5" aria-hidden="true" />
+                </MenuButton>
+              </div>
+              <Transition
+                enter="transition ease-out duration-100"
+                enterFrom="transform opacity-0 scale-95"
+                enterTo="transform opacity-100 scale-100"
+                leave="transition ease-in duration-75"
+                leaveFrom="transform opacity-100 scale-100"
+                leaveTo="transform opacity-0 scale-95"
+              >
+                <MenuItems className="absolute bottom-full mb-2 left-0 right-0 z-10 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                  <div className="py-1">
+                    <MenuItem>
+                      {({ active }) => (
+                        <button
+                          className={classNames(
+                            active ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
+                            'block w-full px-4 py-2 text-left text-sm',
+                          )}
+                          onClick={() => {
+                            sendGAEvent('event', 'start_recording');
+                            startRecording(false);
+                          }}
+                        >
+                          Note
+                        </button>
+                      )}
+                    </MenuItem>
+                    <MenuItem>
+                      {({ active }) => (
+                        <button
+                          className={classNames(
+                            active ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
+                            'block w-full px-4 py-2 text-left text-sm',
+                          )}
+                          onClick={() => {
+                            sendGAEvent('event', 'start_recording');
+                            startRecording(true);
+                          }}
+                        >
+                          Meeting
+                        </button>
+                      )}
+                    </MenuItem>
+                  </div>
+                </MenuItems>
+              </Transition>
+            </Menu>
           </div>
         </div>
       </div>

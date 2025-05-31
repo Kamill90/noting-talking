@@ -11,7 +11,7 @@ export const getCustomPoints = queryWithUser({
       .query('customPoints')
       .withIndex('by_userId', (q) => q.eq('userId', userId))
       .collect();
-  
+
     return customPoints;
   },
 });
@@ -24,14 +24,14 @@ export const createCustomPoint = mutationWithUser({
   handler: async (ctx, { title, description }) => {
     const userId = ctx.userId;
     const storedCustomPoints = await ctx.db
-    .query('customPoints')
-    .withIndex('by_userId', (q) => q.eq('userId', userId))
-    .collect();
+      .query('customPoints')
+      .withIndex('by_userId', (q) => q.eq('userId', userId))
+      .collect();
 
-    if(storedCustomPoints.find(point=>point.title===title)) {
+    if (storedCustomPoints.find(point => point.title === title)) {
       return console.error('duplicates are prohibited')
     }
-    
+
     const customPoint = await ctx.db.insert('customPoints', {
       userId,
       title,
@@ -40,6 +40,7 @@ export const createCustomPoint = mutationWithUser({
     return customPoint;
   },
 });
+
 
 export const deleteCustomPoint = mutationWithUser({
   args: {
