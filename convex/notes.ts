@@ -13,8 +13,9 @@ export const createNote = mutationWithUser({
   args: {
     storageId: v.id('_storage'),
     isMeeting: v.boolean(),
+    selectedLanguage: v.string(),
   },
-  handler: async (ctx, { storageId, isMeeting }) => {
+  handler: async (ctx, { storageId, isMeeting, selectedLanguage }) => {
     const userId = ctx.userId;
     const fileUrl = (await ctx.storage.getUrl(storageId))!;
 
@@ -31,7 +32,8 @@ export const createNote = mutationWithUser({
     await ctx.scheduler.runAfter(0, internal.whisper.chat, {
       fileUrl,
       id: noteId,
-      isMeeting
+      isMeeting,
+      selectedLanguage
     });
 
     return noteId;

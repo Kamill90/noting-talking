@@ -1,6 +1,6 @@
 import { ChevronDownIcon } from '@heroicons/react/20/solid';
 import { MagnifyingGlassIcon } from '@heroicons/react/24/outline';
-import { useState, useRef, useEffect } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 interface Language {
   code: string;
@@ -9,43 +9,17 @@ interface Language {
 }
 
 const LANGUAGES: Language[] = [
-  { code: 'en', name: 'English', nativeName: 'English' },
+  { code: 'auto', name: 'Auto Detect', nativeName: 'Auto Detect' },
+  { code: 'en-US', name: 'American English', nativeName: 'English (US)' },
+  { code: 'en-GB', name: 'British English', nativeName: 'English (UK)' },
   { code: 'es', name: 'Spanish', nativeName: 'Español' },
   { code: 'fr', name: 'French', nativeName: 'Français' },
   { code: 'de', name: 'German', nativeName: 'Deutsch' },
   { code: 'it', name: 'Italian', nativeName: 'Italiano' },
-  { code: 'pt', name: 'Portuguese', nativeName: 'Português' },
-  { code: 'ru', name: 'Russian', nativeName: 'Русский' },
   { code: 'ja', name: 'Japanese', nativeName: '日本語' },
   { code: 'ko', name: 'Korean', nativeName: '한국어' },
-  { code: 'zh', name: 'Chinese', nativeName: '中文' },
-  { code: 'ar', name: 'Arabic', nativeName: 'العربية' },
-  { code: 'hi', name: 'Hindi', nativeName: 'हिन्दी' },
-  { code: 'nl', name: 'Dutch', nativeName: 'Nederlands' },
-  { code: 'sv', name: 'Swedish', nativeName: 'Svenska' },
-  { code: 'da', name: 'Danish', nativeName: 'Dansk' },
-  { code: 'no', name: 'Norwegian', nativeName: 'Norsk' },
-  { code: 'fi', name: 'Finnish', nativeName: 'Suomi' },
-  { code: 'pl', name: 'Polish', nativeName: 'Polski' },
-  { code: 'tr', name: 'Turkish', nativeName: 'Türkçe' },
-  { code: 'cs', name: 'Czech', nativeName: 'Čeština' },
-  { code: 'hu', name: 'Hungarian', nativeName: 'Magyar' },
-  { code: 'ro', name: 'Romanian', nativeName: 'Română' },
-  { code: 'bg', name: 'Bulgarian', nativeName: 'Български' },
-  { code: 'hr', name: 'Croatian', nativeName: 'Hrvatski' },
-  { code: 'sk', name: 'Slovak', nativeName: 'Slovenčina' },
-  { code: 'sl', name: 'Slovenian', nativeName: 'Slovenščina' },
-  { code: 'et', name: 'Estonian', nativeName: 'Eesti' },
-  { code: 'lv', name: 'Latvian', nativeName: 'Latviešu' },
-  { code: 'lt', name: 'Lithuanian', nativeName: 'Lietuvių' },
-  { code: 'uk', name: 'Ukrainian', nativeName: 'Українська' },
-  { code: 'el', name: 'Greek', nativeName: 'Ελληνικά' },
-  { code: 'he', name: 'Hebrew', nativeName: 'עברית' },
-  { code: 'th', name: 'Thai', nativeName: 'ไทย' },
-  { code: 'vi', name: 'Vietnamese', nativeName: 'Tiếng Việt' },
-  { code: 'id', name: 'Indonesian', nativeName: 'Bahasa Indonesia' },
-  { code: 'ms', name: 'Malay', nativeName: 'Bahasa Melayu' },
-  { code: 'tl', name: 'Filipino', nativeName: 'Filipino' },
+  { code: 'pt-BR', name: 'Portuguese (Brazilian)', nativeName: 'Português (Brasil)' },
+  { code: 'zh-CN', name: 'Chinese Mandarin', nativeName: '中文 (普通话)' },
 ];
 
 interface LanguagePickerProps {
@@ -117,7 +91,7 @@ export const LanguagePicker: React.FC<LanguagePickerProps> = ({
           className="inline-flex items-center justify-center rounded-md border border-zinc-300 bg-white px-3 py-2.5 text-sm font-medium text-zinc-700 shadow-sm hover:bg-zinc-50 focus:outline-none focus:ring-2 focus:ring-zinc-500 focus:ring-offset-2"
           onClick={() => setIsOpen(!isOpen)}
         >
-          <span className="font-semibold uppercase">{selectedLang.code.toUpperCase()}</span>
+          <span className="font-semibold">{selectedLang.name}</span>
           <ChevronDownIcon
             className={`ml-1 h-4 w-4 text-zinc-400 transition-transform duration-200 ${
               isOpen ? 'rotate-180' : ''

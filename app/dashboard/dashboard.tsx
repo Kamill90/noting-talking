@@ -7,7 +7,7 @@ import { Id } from '@/convex/_generated/dataModel';
 import { timestampToDate } from '@/convex/utils';
 import { usePreloadedQueryWithAuth } from '@/lib/hooks';
 import { Menu, MenuButton, MenuItem, MenuItems, Transition } from '@headlessui/react';
-import { EllipsisVerticalIcon, ChevronDownIcon } from '@heroicons/react/20/solid';
+import { ChevronDownIcon, EllipsisVerticalIcon } from '@heroicons/react/20/solid';
 import { sendGAEvent } from '@next/third-parties/google';
 import { Preloaded, useMutation } from 'convex/react';
 import debounce from 'lodash/debounce';
@@ -19,16 +19,15 @@ import { RecordingContext } from '../RecordingContext';
 
 export default function DashboardHomePage({
   preloadedNotes,
-  preloadedCustomPoints,
 }: {
   preloadedNotes: Preloaded<typeof api.notes.getNotes>;
   preloadedCustomPoints: Preloaded<typeof api.customPoints.getCustomPoints>;
 }) {
   const allNotes = usePreloadedQueryWithAuth(preloadedNotes);
-  const { isRecording, startRecording } = useContext(RecordingContext);
+  const { isRecording, startRecording, selectedLanguage, setSelectedLanguage } =
+    useContext(RecordingContext);
 
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedLanguage, setSelectedLanguage] = useState('en');
   const mutateNoteRemove = useMutation(api.notes.removeNote);
 
   const { playerState, play, pause, stop, resume } = usePlayer();
