@@ -8,16 +8,27 @@ import { internalAction, internalMutation } from './_generated/server';
 const deepgramApiKey = process.env.DEEPGRAM_API_KEY;
 const deepgram = createClient(deepgramApiKey);
 
-const deepGramTranscription = async (url: string, diarize: boolean) => {
-  console.log('deepGramTranscription',{url})
+const deepGramTranscription = async (url: string, diarize: boolean, selectedLanguage: string) => {
+  const options: {
+    model: string;
+    detect_language: boolean;
+    smart_format: boolean;
+    diarize: boolean;
+    language?: string;
+  } = {
+    model: 'nova-2',
+    detect_language: selectedLanguage === 'auto',
+    smart_format: true,
+    diarize
+  }
+  if (selectedLanguage !== 'auto') {
+    options.language = selectedLanguage;
+  }
+  console.log('deepGramTranscription',{options, url});
+
   const { result, error } = await deepgram.listen.prerecorded.transcribeUrl(
     {url},
-    {
-      model: 'nova-2',
-      detect_language: true,
-      smart_format: true,
-      diarize
-    },
+    options,
   );
 
   if (error) {
@@ -41,11 +52,12 @@ export const chat = internalAction({
     fileUrl: v.string(),
     id: v.id('notes'),
     isMeeting: v.boolean(),
+    selectedLanguage: v.string(),
   },
   handler: async (ctx, args) => {
     try {
       console.log('chat', {args})
-      const transcription =  await deepGramTranscription(args.fileUrl, args.isMeeting)
+      const transcription =  await deepGramTranscription(args.fileUrl, args.isMeeting, args.selectedLanguage)
       if(!transcription.text.length) {
         throw new Error('no transcription generated')
       }

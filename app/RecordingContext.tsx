@@ -13,6 +13,8 @@ interface RecordingContextType {
   cancelRecording: () => void;
   pauseRecording: () => void;
   resumeRecording: () => void;
+  setSelectedLanguage: (language: string) => void;
+  selectedLanguage: string;
   totalSeconds?: number;
   processing: boolean;
 }
@@ -25,6 +27,8 @@ const defaultState = {
   startRecording: () => {},
   pauseRecording: () => {},
   resumeRecording: () => {},
+  setSelectedLanguage: () => {},
+  selectedLanguage: 'en',
   totalSeconds: undefined,
   processing: false,
 };
@@ -43,6 +47,7 @@ export const RecordingContextProvider: React.FC<{ children: ReactNode }> = ({ ch
   const intervalRef = useRef<NodeJS.Timeout>();
   const audioContextRef = useRef<AudioContext | null>(null);
   const screenStreamRef = useRef<MediaStream | null>(null);
+  const [selectedLanguage, setSelectedLanguage] = useState('auto');
 
   const generateUploadUrl = useMutation(api.notes.generateUploadUrl);
   const createNote = useMutation(api.notes.createNote);
@@ -85,7 +90,7 @@ export const RecordingContextProvider: React.FC<{ children: ReactNode }> = ({ ch
         const { storageId } = await result.json();
 
         if (user) {
-          await createNote({ storageId, isMeeting: includeDeviceAudio });
+          await createNote({ storageId, isMeeting: includeDeviceAudio, selectedLanguage });
         }
       };
     } catch (err) {
@@ -201,6 +206,8 @@ export const RecordingContextProvider: React.FC<{ children: ReactNode }> = ({ ch
         cancelRecording,
         resumeRecording,
         pauseRecording,
+        setSelectedLanguage,
+        selectedLanguage,
         isRecording,
         processing: false, // to do
         isPaused,
